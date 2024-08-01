@@ -4,26 +4,22 @@
   <parent>
     <groupId>org.bedework</groupId>
     <artifactId>bedework-parent</artifactId>
-    <version>66-SNAPSHOT</version>
+    <version>67-SNAPSHOT</version>
   </parent>
 
   <artifactId>bw-testsuite</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>Bedework: test via web interface.</name>
-  <url>https://github.com/Bedework/bw-web</url>
+  <name>Bedework: testsuite.</name>
+  <url>https://github.com/Bedework/bw-testsuite</url>
+  <packaging>pom</packaging>
 
   <scm>
-    <connection>scm:git:git@github.com:Bedework/bw-webtest.git</connection>
-    <developerConnection>scm:git:git@github.com:Bedework/bw-webtest.git</developerConnection>
-    <url>https://github.com/Bedework/bw-webtest</url>
+    <connection>scm:git:git@github.com:Bedework/bw-testsuite.git</connection>
+    <developerConnection>scm:git:git@github.com:Bedework/bw-testsuite.git</developerConnection>
+    <url>https://github.com/Bedework/bw-testsuite</url>
   </scm>
 
-  <dependencies>
-    <!-- Bedework -->
-
-    <dependency>
-      <groupId>org.bedework</groupId>
-      <artifactId>bw-util-logging</artifactId>
-    </dependency>
-  </dependencies>
+  <modules>
+    <module>bw-webtest</module>
+  </modules>
 </project>
