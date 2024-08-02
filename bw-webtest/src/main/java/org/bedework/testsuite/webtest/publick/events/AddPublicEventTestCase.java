@@ -16,7 +16,7 @@
     specific language governing permissions and limitations
     under the License.
  */
-package org.bedework.testsuite.webtest.publiceventsadministration;
+package org.bedework.testsuite.webtest.publick.events;
 
 import org.bedework.testsuite.webtest.util.SeleniumUtil;
 import org.bedework.testsuite.webtest.util.TestDefs;
@@ -50,11 +50,6 @@ public class AddPublicEventTestCase {
    */
   @Before
   public void setUpBeforeClass() {
-    System.out.println("\n\n*********************************");
-    System.out.println("Test \"Add Public Event\" starting.\n");
-    d = SeleniumUtil.getWebDriver();
-    wait = SeleniumUtil.getWebDriverWait();
-    SeleniumUtil.login("admin","vbede","bedework"); // log in as a typical event admin
   }
 
   /**
@@ -71,6 +66,12 @@ public class AddPublicEventTestCase {
   public void testProcess() {
     final String uuid = UUID.randomUUID().toString();
     final String eventTitle = "SELENIUM - CreatePubEventsTest - " + uuid;
+
+    System.out.println("\n\n*********************************");
+    System.out.println("Test \"Add Public Event\" starting.\n");
+    d = SeleniumUtil.getWebDriver();
+    wait = SeleniumUtil.getWebDriverWait();
+    SeleniumUtil.login("admin","vbede","bedework"); // log in as a typical event admin
 
     // get to the Add Event page
     d.findElement(By.xpath("//a[contains(@href,'initAddEvent.do')]")).click();

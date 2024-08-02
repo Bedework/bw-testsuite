@@ -1,4 +1,4 @@
-package org.bedework.testsuite.webtest.personalevents;
+package org.bedework.testsuite.webtest.personal;
 
 import org.bedework.testsuite.webtest.util.SeleniumUtil;
 import org.bedework.testsuite.webtest.util.TestDefs;

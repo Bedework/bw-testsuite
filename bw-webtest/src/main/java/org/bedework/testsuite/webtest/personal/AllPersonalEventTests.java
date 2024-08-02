@@ -16,10 +16,9 @@
     specific language governing permissions and limitations
     under the License.
  */
-package org.bedework.testsuite.webtest.publiceventsadministration;
+package org.bedework.testsuite.webtest.personal;
 
 import org.bedework.testsuite.webtest.util.SeleniumUtil;
-import org.bedework.testsuite.webtest.util.TestDefs.DriverType;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -27,21 +26,20 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ AddPublicEventTestCase.class })
-public class AllPubEventTests {
+@Suite.SuiteClasses({ AddPublicSubTestCase.class })
+public class AllPersonalEventTests {
 
   /**
    */
   @BeforeClass
   public static void setUpBeforeClass() {
-    SeleniumUtil.setDriverType(DriverType.FIREFOX);
   }
 
   /**
    */
   @AfterClass
   public static void tearDownAfterClass() {
-    //SeleniumUtil.closeDriver();
+    SeleniumUtil.closeDriver();
   }
 }
 

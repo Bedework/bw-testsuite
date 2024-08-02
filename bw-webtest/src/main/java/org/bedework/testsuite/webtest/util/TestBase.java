@@ -18,8 +18,6 @@
  */
 package org.bedework.testsuite.webtest.util;
 
-import org.bedework.testsuite.webtest.util.TestDefs.DriverType;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -28,11 +26,11 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
 
+import static org.bedework.testsuite.webtest.util.SeleniumUtil.getDriverType;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,41 +40,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author johnsa
  *
  */
-public class SeleniumUtil {
-  private static DriverType dType = DriverType.FIREFOX;
-  private static WebDriver driver;
-  private static WebDriverWait wait;
-
-  /** Type to be used for tests
-   *
-   * @param val
-   */
-  public static void setDriverType(final DriverType val) {
-    if (dType != val) {
-      driver = null;
-    }
-
-    dType = val;
-  }
-
-  /**
-   * @return current driver type
-   */
-  public static DriverType getDriverType() {
-    return dType;
-  }
+public class TestBase {
+  private WebDriver driver;
 
   /**
    * Get a driver of the current type
    *
    * @return driver
    */
-  public static WebDriver getWebDriver() {
+  public WebDriver getWebDriver() {
     if (driver != null) {
       return driver;
     }
 
-    switch(dType) {
+    switch(getDriverType()) {
       case HTMLUNIT:
         driver = new HtmlUnitDriver();
         break;
@@ -100,31 +77,18 @@ public class SeleniumUtil {
   /** Close the driver - and the browser.
    *
    */
-  public static void closeDriver() {
+  public void closeDriver() {
     if (driver != null) {
       driver.quit();
     }
   }
 
-  public static WebDriverWait getWebDriverWait() {
-    if (wait != null) {
-      return wait;
-    }
-    if (driver == null) {
-      return null;
-    }
-
-    wait = new WebDriverWait(driver, Duration.ofSeconds(30));
-
-    System.out.println("Returning driver wait.");
-
-    return wait;
-  }
-
   /**
    * Login to the admin web client
    */
-  public static void login(final String client, final String user, final String password) {
+  public void login(final String client,
+                    final String user,
+                    final String password) {
     try {
       final WebDriver driver = getWebDriver();
 
@@ -167,15 +131,16 @@ public class SeleniumUtil {
     }
   }
 
-  public static void logout() {
+  public void logout() {
     final WebElement element = getWebDriver().findElement(By.xpath("//a[contains(@href,TestDefs.logoutText)]"));
     assertNotNull(element);
     element.click();
     findById("loginBox");
   }
 
-  public static boolean checkboxValue(final String id) {
-    final WebElement checkbox = driver.findElement(By.id(id));
+  public boolean checkboxValue(final String id) {
+    final WebElement checkbox =
+            getWebDriver().findElement(By.id(id));
     return checkbox.isSelected();
   }
 
@@ -185,9 +150,9 @@ public class SeleniumUtil {
    * @param value to set if needed
    * @return true if changed (submmit needed)
    */
-  public static boolean setCheckboxValueIfNeeded(final String name,
-                                                 final boolean value) {
-    final WebElement checkbox = driver.findElement(By.name(name));
+  public boolean setCheckboxValueIfNeeded(final String name,
+                                          final boolean value) {
+    final WebElement checkbox = getWebDriver().findElement(By.name(name));
     if (checkbox.isSelected() == value) {
       return false;
     }
@@ -196,24 +161,24 @@ public class SeleniumUtil {
     return true;
   }
 
-  public static void clickByName(final String name) {
-    driver.findElement(By.name(name)).click();
+  public void clickByName(final String name) {
+    getWebDriver().findElement(By.name(name)).click();
   }
 
-  public static WebElement findById(final String id) {
-    return driver.findElement(By.id(id));
+  public WebElement findById(final String id) {
+    return getWebDriver().findElement(By.id(id));
   }
 
-  public static void setTextById(final String id,
+  public void setTextById(final String id,
                                  final String val) {
     findById(id).sendKeys(val);
   }
 
-  public static boolean tableHasElementText(final String id,
+  public boolean tableHasElementText(final String id,
                                             final String val) {
-    final var table = driver.findElement(By.id(id));
+    final var table = getWebDriver().findElement(By.id(id));
     final List<WebElement> cells =
-            driver.findElements(By.tagName("td"));
+            getWebDriver().findElements(By.tagName("td"));
 
     for (final var cell: cells) {
       if (cell.getText().equals(val)) {
@@ -223,15 +188,16 @@ public class SeleniumUtil {
     return false;
   }
 
-  public static void gotoAdminPage(final String hrefSegment) {
-    driver.findElement(By.xpath("//a[contains(@href,'" +
-                                        hrefSegment +
-                                        "')]")).click();
-    SeleniumUtil.checkPage("admin");
+  public void gotoAdminPage(final String hrefSegment) {
+    getWebDriver().findElement(
+            By.xpath("//a[contains(@href,'" +
+                             hrefSegment +
+                             "')]")).click();
+    checkPage("admin");
   }
 
-  public static void checkPage(final String client) {
-    final WebElement e = driver.findElement(By.id("footer"));
+  public void checkPage(final String client) {
+    final WebElement e = findById("footer");
     if (client.equals("admin")) {
       assertThat("Footer must contain correct text: ",
                  e.getText(),
@@ -247,7 +213,7 @@ public class SeleniumUtil {
     }
   }
 
-  public static ExpectedCondition<WebElement> visibilityOfElementLocated(final By locator) {
+  public ExpectedCondition<WebElement> visibilityOfElementLocated(final By locator) {
     return new ExpectedCondition<WebElement>() {
       public WebElement apply(final WebDriver driver) {
         final WebElement toReturn = driver.findElement(locator);
@@ -258,5 +224,4 @@ public class SeleniumUtil {
       }
     };
   }
-
 }

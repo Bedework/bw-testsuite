@@ -18,16 +18,14 @@
  */
 package org.bedework.testsuite.webtest;
 
-import org.bedework.testsuite.webtest.personalevents.AllPersonalEventTests;
-import org.bedework.testsuite.webtest.publiceventsadministration.AllPubEventTests;
+import org.bedework.testsuite.webtest.personal.AllPersonalEventTests;
+import org.bedework.testsuite.webtest.publick.events.AllPubEventTests;
+import org.bedework.testsuite.webtest.publick.users.AllUserGroupTests;
+import org.bedework.testsuite.webtest.util.SeleniumUtil;
+import org.bedework.testsuite.webtest.util.TestDefs.DriverType;
 import org.bedework.util.args.Args;
 import org.bedework.util.logging.BwLogger;
 import org.bedework.util.logging.Logged;
-
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
-
-import static org.junit.runner.JUnitCore.runClasses;
 
 /** Run selenium tests.
  *
@@ -38,38 +36,51 @@ public class RunTests implements Logged {
 
 	void process() {
 
-	  final Result result = runClasses(AllPubEventTests.class,
-                                     AllPersonalEventTests.class);
+	  final Result result =
+						runClasses(AllUserGroupTests.class,
+											 AllPubEventTests.class,
+											 AllPersonalEventTests.class);
     for (final Failure failure: result.getFailures()) {
       info(failure.toString());
     }
-
 	}
 
-	boolean processArgs(final Args args) throws Throwable {
+	boolean processArgs(final Args args) {
 		if (args == null) {
 			return true;
 		}
 
-		while (args.more()) {
-			if (args.ifMatch("")) {
-				continue;
-			}
+		try {
+			while (args.more()) {
+				if (args.ifMatch("")) {
+					continue;
+				}
 
-			if (args.ifMatch("-debug")) {
-				debug = true;
-			} else if (args.ifMatch("-ndebug")) {
-				debug = false;
+				if (args.ifMatch("-dtype")) {
+					final DriverType val;
+					try {
+						val = DriverType.valueOf(args.next());
+					} catch (final Throwable t) {
+						error("Illegal driver type: " + args.current());
+						return false;
+					}
+					SeleniumUtil.setDriverType(val);
+				} else if (args.ifMatch("-ndebug")) {
+					debug = false;
 /*			} else if (args.ifMatch("-f")) {
 				infileName = args.next();
 				fileInput = true;
       } else if (args.ifMatch("-url")) {
         pstate.url = args.next();*/
-			} else {
-				error("Illegal argument: " + args.current());
-				usage();
-				return false;
+				} else {
+					error("Illegal argument: " + args.current());
+					usage();
+					return false;
+				}
 			}
+		} catch (final Throwable t) {
+			error(t);
+			return false;
 		}
 
 		return true;
