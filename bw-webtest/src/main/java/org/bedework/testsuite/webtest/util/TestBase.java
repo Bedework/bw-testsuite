@@ -19,12 +19,14 @@
 package org.bedework.testsuite.webtest.util;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import java.time.Duration;
@@ -42,6 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 public class TestBase {
   private WebDriver driver;
+  private Actions actions;
 
   /**
    * Get a driver of the current type
@@ -72,6 +75,13 @@ public class TestBase {
     System.out.println("Returning driver.");
 
     return driver;
+  }
+
+  public Actions getActions() {
+    if (actions == null) {
+      actions = new Actions(getWebDriver());
+    }
+    return actions;
   }
 
   /** Close the driver - and the browser.
@@ -132,7 +142,9 @@ public class TestBase {
   }
 
   public void logout() {
-    final WebElement element = getWebDriver().findElement(By.xpath("//a[contains(@href,TestDefs.logoutText)]"));
+    // Scroll to the top
+    getActions().sendKeys(Keys.HOME).build().perform();
+    final WebElement element = getWebDriver().findElement(By.xpath("//a[@id=\"bwLogoutButton\" and contains(@href,TestDefs.logoutText)]"));
     assertNotNull(element);
     element.click();
     findById("loginBox");
@@ -169,6 +181,18 @@ public class TestBase {
     return getWebDriver().findElement(By.id(id));
   }
 
+  public WebElement findByName(final String val) {
+    return getWebDriver().findElement(By.name(val));
+  }
+
+  public WebElement findByTag(final String val) {
+    return getWebDriver().findElement(By.tagName(val));
+  }
+
+  public WebElement findByXpath(final String path) {
+    return getWebDriver().findElement(By.xpath(path));
+  }
+
   public void setTextById(final String id,
                                  final String val) {
     findById(id).sendKeys(val);
@@ -186,6 +210,16 @@ public class TestBase {
       }
     }
     return false;
+  }
+
+  public void getAdminPage(final String href) {
+    getWebDriver().get(href);
+    checkPage("admin");
+  }
+
+  public void getPublicPage(final String href) {
+    getWebDriver().get(href);
+    checkPage("public");
   }
 
   public void gotoAdminPage(final String hrefSegment) {

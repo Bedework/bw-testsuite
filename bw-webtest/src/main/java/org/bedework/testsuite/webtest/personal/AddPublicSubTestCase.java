@@ -6,6 +6,7 @@ import org.bedework.testsuite.webtest.util.TestDefs;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Order;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -49,7 +50,8 @@ public class AddPublicSubTestCase {
   /**
    */
   @Test
-  public void testProcess() {
+  @Order(1000)
+  public void testAddEvent() {
     final String subFinder = UUID.randomUUID().toString().substring(0, 4);
 
     // get to the Add Event page

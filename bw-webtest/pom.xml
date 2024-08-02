@@ -49,6 +49,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-console-standalone</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>htmlunit3-driver</artifactId>
     </dependency>
@@ -69,7 +74,7 @@
           <assembleDirectory>${project.build.directory}/client</assembleDirectory>
           <programs>
             <program>
-              <mainClass>org.bedework.testsuite.webtest.RunTests</mainClass>
+              <mainClass>org.junit.platform.console.ConsoleLauncher</mainClass>
               <id>client</id>
             </program>
           </programs>

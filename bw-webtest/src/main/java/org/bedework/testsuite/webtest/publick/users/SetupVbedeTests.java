@@ -18,44 +18,37 @@
  */
 package org.bedework.testsuite.webtest.publick.users;
 
-import org.bedework.testsuite.webtest.util.SeleniumUtil;
 import org.bedework.testsuite.webtest.util.TestBase;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.support.ui.Select;
 
 /**
  * @author johnsa
  *
  */
-public class SetupVbedeTestCase extends TestBase {
-  private Select select;
+@DisplayName("Setup user vbede for later tests")
+public class SetupVbedeTests extends TestBase {
   private static final String testName = "Setup vbede";
 
-  /**
-   */
-  @BeforeEach
-  public void setUpBeforeClass() {
-    System.out.println("\n\n*********************************");
-    System.out.println("Test \"" + testName + "\" starting.\n");
-
-    // Login as a superuser
-    SeleniumUtil.login("admin","admin","bedework");
-  }
 
   /**
    */
   @AfterEach
-  public void tearDownAfterClass() {
+  public void tearDownAfterTest() {
     closeDriver();
   }
 
   /**
    */
   @Test
-  public void testProcess() {
+  @Order(1)
+  public void doVbedeSetup() {
+    // Login as a superuser
+    login("admin","admin","bedework");
+
     // get to the user roles page
     gotoAdminPage("showUsersTab.rdo");
     gotoAdminPage("authuser/initUpdate.do");
@@ -77,7 +70,7 @@ public class SetupVbedeTestCase extends TestBase {
       clickByName("addGroupMember");
     }
 
-    SeleniumUtil.logout();
+    logout();
     System.out.println("Test \"" + testName + "\" finished.");
   }
 
