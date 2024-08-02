@@ -173,8 +173,16 @@ public class TestBase {
     return true;
   }
 
+  public void clickById(final String id) {
+    findById(id).click();
+  }
+
   public void clickByName(final String name) {
-    getWebDriver().findElement(By.name(name)).click();
+    findByName(name).click();
+  }
+
+  public void clickByXpath(final String path) {
+    findByXpath(path).click();
   }
 
   public WebElement findById(final String id) {
@@ -193,9 +201,26 @@ public class TestBase {
     return getWebDriver().findElement(By.xpath(path));
   }
 
+  public String getTextById(final String id) {
+    return findById(id).getText();
+  }
+
+  public String getTextByTag(final String tag) {
+    return findByTag(tag).getText();
+  }
+
+  public String getTextByXpath(final String path) {
+    return findByXpath(path).getText();
+  }
+
   public void setTextById(final String id,
-                                 final String val) {
+                          final String val) {
     findById(id).sendKeys(val);
+  }
+
+  public void setTextByName(final String name,
+                            final String val) {
+    findByName(name).sendKeys(val);
   }
 
   public boolean tableHasElementText(final String id,

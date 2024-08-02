@@ -69,8 +69,13 @@ public class AddPublicEventTests extends TestBase {
                  TestDefs.adminEventInfoTitle);
     System.out.println("On " + TestDefs.adminEventInfoTitle + " page.");
 
+    // Page requires summary, description before submit button works
+
+    setTextByName("summary", eventTitle);
+    setTextByName("description", "selenium test description");
+
     // test basic validation without filling in the form
-    findByName("addEvent").click();
+    clickByName("addEvent");
 
     MatcherAssert.<String>assertThat(
             "Error should be thrown for no topical area: ",
@@ -81,26 +86,8 @@ public class AddPublicEventTests extends TestBase {
     // we must select a topical area to get to the next errors
     findByXpath("//input[@name='alias' and @value='/user/agrp_calsuite-MainCampus/Arts/Concerts']").click();
 
-    // test next validation error (no title)
-    findByName("addEvent").click();
-    assertThat("Error should be thrown for 'no title': ",
-               findById("errors").getText(),
-               containsString(TestDefs.adminErrorUpdateEventNoTitle));
-
-    // add a title
-    findByName("summary").sendKeys(eventTitle);
-
-    // test next validation error (no description)
-    findByName("addEvent").click();
-    assertThat("Error should be thrown for 'no description': ",
-               findById("errors").getText(),
-               containsString(TestDefs.adminErrorUpdateEventNoDescription));
-
-    // add a description
-    findById("description").sendKeys("selenium test description");
-
     // test next validation error (no location)
-    findByName("addEvent").click();
+    clickByName("addEvent");
     assertThat("Error should be thrown for 'no location': ",
                findById("errors").getText(),
                containsString(TestDefs.adminErrorUpdateEventNoLocation));
@@ -111,7 +98,7 @@ public class AddPublicEventTests extends TestBase {
     select.selectByIndex(1);
 
     // test next validation error (no contact)
-    findByName("addEvent").click();
+    clickByName("addEvent");
     assertThat("Error should be thrown for 'no contact': ",
                findById("errors").getText(),
                containsString(TestDefs.adminErrorUpdateEventNoContact));
@@ -136,16 +123,18 @@ public class AddPublicEventTests extends TestBase {
     select.selectByIndex(0);
 
     // set the cost and link
-    findByName("eventCost").sendKeys("FREE");
-    findByName("eventLink").sendKeys("http://www.jasig.org/bedework");
+    setTextByName("eventCost", "FREE");
+    setTextByName("eventLink", "http://www.jasig.org/bedework");
 
     // image and thumbnail URLs
     // we'll check image uploads in update event test, because we need to also test image removal
-    findById("xBwImageHolder").sendKeys("http://www.jasig.org/sites/jasig.webchuckhosting.com/files/bedework_logo.jpg");
-    findById("xBwImageThumbHolder").sendKeys("http://www.jasig.org/misc/feed.png");
+    setTextByName("xBwImageHolder",
+                  "http://www.jasig.org/sites/jasig.webchuckhosting.com/files/bedework_logo.jpg");
+    setTextByName("xBwImageThumbHolder",
+                  "http://www.jasig.org/misc/feed.png");
 
     // submit the event
-    findByName("addEvent").click();
+    clickByName("addEvent");
 
     // ****************************************
     // Now test the event in the public client.
