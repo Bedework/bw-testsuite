@@ -1,7 +1,6 @@
 package org.bedework.testsuite.webtest.personal;
 
 import org.bedework.testsuite.webtest.util.TestBase;
-import org.bedework.testsuite.webtest.util.TestDefs;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,8 +43,9 @@ public class AddPublicSubTests extends TestBase {
     clickByXpath("//a[@class='calManageLink']");
 
     assertEquals(getTextByTag("h2"),
-                 TestDefs.userManageCalTitle);
-    System.out.println("On " + TestDefs.userManageCalTitle + " page.");
+                 getProperty(propUserManageCalTitle));
+    System.out.println("On " + getProperty(propUserManageCalTitle)
+                               + " page.");
 
     // click the add subscription button
     clickById("addSubButton");

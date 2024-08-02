@@ -19,7 +19,6 @@
 package org.bedework.testsuite.webtest.publick.events;
 
 import org.bedework.testsuite.webtest.util.TestBase;
-import org.bedework.testsuite.webtest.util.TestDefs;
 
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterEach;
@@ -66,8 +65,8 @@ public class AddPublicEventTests extends TestBase {
     checkPage("admin");
 
     assertEquals(findByTag("h2").getText(),
-                 TestDefs.adminEventInfoTitle);
-    System.out.println("On " + TestDefs.adminEventInfoTitle + " page.");
+                 getProperty(propAdminEventInfoTitle));
+    System.out.println("On " + getProperty(propAdminEventInfoTitle) + " page.");
 
     // Page requires summary, description before submit button works
 
@@ -81,7 +80,7 @@ public class AddPublicEventTests extends TestBase {
             "Error should be thrown for no topical area: ",
             findById("errors").getText(),
             containsString(
-                    TestDefs.adminErrorUpdateEventTopicalArea));
+                    getProperty(propAdminErrorNoTopicalArea)));
 
     // we must select a topical area to get to the next errors
     findByXpath("//input[@name='alias' and @value='/user/agrp_calsuite-MainCampus/Arts/Concerts']").click();
@@ -90,7 +89,7 @@ public class AddPublicEventTests extends TestBase {
     clickByName("addEvent");
     assertThat("Error should be thrown for 'no location': ",
                findById("errors").getText(),
-               containsString(TestDefs.adminErrorUpdateEventNoLocation));
+               containsString(getProperty(propAdminErrorNoLocation)));
 
     // select a location
     findById("bwLocationAllButton").click();
@@ -101,7 +100,7 @@ public class AddPublicEventTests extends TestBase {
     clickByName("addEvent");
     assertThat("Error should be thrown for 'no contact': ",
                findById("errors").getText(),
-               containsString(TestDefs.adminErrorUpdateEventNoContact));
+               containsString(getProperty(propAdminErrorNoContact)));
 
     // select a contact
     findById("bwContactAllButton").click();

@@ -35,7 +35,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 
-import static org.bedework.testsuite.webtest.util.SeleniumUtil.getDriverType;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,6 +45,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  */
 public class TestBase {
+  /** Browser drivers */
+  public enum DriverType {
+    HTMLUNIT, FIREFOX, IE, CHROME;
+  }
+
+  private static DriverType dType = DriverType.FIREFOX;
+
   private WebDriver driver;
   private Actions actions;
 
@@ -76,7 +82,7 @@ public class TestBase {
   /** Personal client strings for testing */
   public static final String propPersonalFooter =
           "personalFooter";
-  public static Object propUserManageCalTitle =
+  public static final String propUserManageCalTitle =
           "userManageCalTitle";
 
   /** Submissions client strings for testing */
@@ -99,6 +105,22 @@ public class TestBase {
     }
 
     return props.getProperty(name);
+  }
+
+
+  /** Type to be used for tests
+   *
+   * @param val
+   */
+  public static void setDriverType(final DriverType val) {
+    dType = val;
+  }
+
+  /**
+   * @return current driver type
+   */
+  public static DriverType getDriverType() {
+    return dType;
   }
 
   /**
@@ -320,14 +342,14 @@ public class TestBase {
     if (client.equals("admin")) {
       assertThat("Footer must contain correct text: ",
                  e.getText(),
-                 containsString(TestDefs.adminFooter));
+                 containsString(getProperty(propAdminFooter)));
       return;
     }
 
     if (client.equals("public")) {
       assertThat("Footer must contain correct text: ",
                  e.getText(),
-                 containsString(TestDefs.publicFooter));
+                 containsString(getProperty(propPublicFooter)));
       return;
     }
   }
