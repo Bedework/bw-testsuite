@@ -29,8 +29,11 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.List;
+import java.util.Properties;
 
 import static org.bedework.testsuite.webtest.util.SeleniumUtil.getDriverType;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -45,6 +48,58 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TestBase {
   private WebDriver driver;
   private Actions actions;
+
+  private static Properties props;
+  private static final Object lock = new Object();
+
+  // Property names
+  /** Logout string - found in the URL */
+  public static final String propLogoutText = "logoutText";
+
+  /** Admin client strings for testing - assumes we are using en_US locale */
+  public static final String propAdminFooter = "adminFooter";
+  public static final String propAdminEventInfoTitle = "adminEventInfoTitle";
+  public static final String propAdminErrorNoTopicalArea =
+          "adminErrorUpdateEventTopicalArea";
+  public static final String propAdminErrorNoTitle =
+          "adminErrorUpdateEventNoTitle";
+  public static final String propAdminErrorNoDescription =
+          "adminErrorUpdateEventNoDescription";
+  public static final String propAdminErrorNoLocation =
+          "adminErrorUpdateEventNoLocation";
+  public static final String propAdminErrorNoContact =
+          "adminErrorUpdateEventNoContact";
+
+  /** Public client strings for testing */
+  public static final String propPublicFooter = "publicFooter";
+
+  /** Personal client strings for testing */
+  public static final String propPersonalFooter =
+          "personalFooter";
+  public static Object propUserManageCalTitle =
+          "userManageCalTitle";
+
+  /** Submissions client strings for testing */
+  public static final String propSubmissionsFooter =
+          "submissionsFooter";
+
+  public String getProperty(final String name) {
+    if (props == null) {
+      synchronized (lock) {
+        if (props == null) {
+          props = new Properties();
+          try (final InputStream stream =
+            getClass().getResourceAsStream("/webtest.properties")) {
+            props.load(stream);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        }
+      }
+    }
+
+    return props.getProperty(name);
+  }
 
   /**
    * Get a driver of the current type
@@ -122,15 +177,17 @@ public class TestBase {
       // Verify that we are logged in
       element = driver.findElement(By.id("footer"));
       if (client.equals("admin")) {
-        assertEquals(element.getText(),TestDefs.adminFooter);
+        assertEquals(element.getText(),
+                     getProperty(propAdminFooter));
       }
       if (client.equals("personal")) {
-        assertEquals(element.getText(),TestDefs.personalFooter);
+        assertEquals(element.getText(),
+                     getProperty(propPersonalFooter));
       }
       if (client.equals("submissions")) {
         assertThat("Submissions footer not found.",
                    element.getText(),
-                   containsString(TestDefs.submissionsFooter));
+                   containsString(getProperty(propSubmissionsFooter)));
       }
 
       // Output the footer text:
@@ -144,7 +201,11 @@ public class TestBase {
   public void logout() {
     // Scroll to the top
     getActions().sendKeys(Keys.HOME).build().perform();
-    final WebElement element = getWebDriver().findElement(By.xpath("//a[@id=\"bwLogoutButton\" and contains(@href,TestDefs.logoutText)]"));
+    final WebElement element = getWebDriver().
+            findElement(By.xpath(
+                    "//a[@id=\"bwLogoutButton\" and contains(@href, '" +
+                        getProperty(propLogoutText) +
+                        "')]"));
     assertNotNull(element);
     element.click();
     findById("loginBox");
@@ -164,7 +225,7 @@ public class TestBase {
    */
   public boolean setCheckboxValueIfNeeded(final String name,
                                           final boolean value) {
-    final WebElement checkbox = getWebDriver().findElement(By.name(name));
+    final WebElement checkbox = findByName(name);
     if (checkbox.isSelected() == value) {
       return false;
     }
@@ -225,7 +286,7 @@ public class TestBase {
 
   public boolean tableHasElementText(final String id,
                                             final String val) {
-    final var table = getWebDriver().findElement(By.id(id));
+    final var table = findById(id);
     final List<WebElement> cells =
             getWebDriver().findElements(By.tagName("td"));
 
@@ -248,10 +309,9 @@ public class TestBase {
   }
 
   public void gotoAdminPage(final String hrefSegment) {
-    getWebDriver().findElement(
-            By.xpath("//a[contains(@href,'" +
+    findByXpath("//a[contains(@href,'" +
                              hrefSegment +
-                             "')]")).click();
+                             "')]").click();
     checkPage("admin");
   }
 
