@@ -32,7 +32,7 @@ import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author johnsa
@@ -58,10 +58,11 @@ public class AddPublicEventTests extends TestBase {
     final String uuid = UUID.randomUUID().toString();
     final String eventTitle = "SELENIUM - CreatePubEventsTest - " + uuid;
 
-    login("admin","vbede","bedework"); // log in as a typical event admin
+    login("admin", getProperty(propAdminUser),
+          getProperty(propAdminUserPw)); // log in as a typical event admin
 
     // get to the Add Event page
-    findByXpath("//a[contains(@href,'initAddEvent.do')]").click();
+    clickByXpath("//a[contains(@href,'initAddEvent.do')]");
     checkPage("admin");
 
     assertEquals(findByTag("h2").getText(),
@@ -76,14 +77,16 @@ public class AddPublicEventTests extends TestBase {
     // test basic validation without filling in the form
     clickByName("addEvent");
 
-    MatcherAssert.<String>assertThat(
+    MatcherAssert.assertThat(
             "Error should be thrown for no topical area: ",
             findById("errors").getText(),
             containsString(
                     getProperty(propAdminErrorNoTopicalArea)));
 
     // we must select a topical area to get to the next errors
-    findByXpath("//input[@name='alias' and @value='/user/agrp_calsuite-MainCampus/Arts/Concerts']").click();
+    findByXpath("//input[@name='alias' and @value='" +
+                        getProperty(propAdminEventTopicalArea1) +
+                        "']").click();
 
     // test next validation error (no location)
     clickByName("addEvent");
@@ -123,14 +126,15 @@ public class AddPublicEventTests extends TestBase {
 
     // set the cost and link
     setTextByName("eventCost", "FREE");
-    setTextByName("eventLink", "http://www.jasig.org/bedework");
+    setTextByName("eventLink",
+                  getProperty(propAdminEventLink));
 
     // image and thumbnail URLs
     // we'll check image uploads in update event test, because we need to also test image removal
     setTextByName("xBwImageHolder",
-                  "http://www.jasig.org/sites/jasig.webchuckhosting.com/files/bedework_logo.jpg");
+                  getProperty(propBedeworkLogo));
     setTextByName("xBwImageThumbHolder",
-                  "http://www.jasig.org/misc/feed.png");
+                  getProperty(propBedeworkLogoThumb));
 
     // submit the event
     clickByName("addEvent");
@@ -146,10 +150,10 @@ public class AddPublicEventTests extends TestBase {
     }
     System.out.println("Now checking event in public web client.");
 
-    getPublicPage("http://localhost:8080/cal/setup.do");
+    getPublicPage(getProperty(propPublicHome));
 
     // The event should exist today.  It should be on the current page.
-    // The following will fail out if not found:
+    // The following will fail if not found:
     final WebElement element = findByXpath("//li[@class='titleEvent']/a[contains(text(),'" + uuid + "')]");
 
     // We found it, now click the link to visit the event detail page.

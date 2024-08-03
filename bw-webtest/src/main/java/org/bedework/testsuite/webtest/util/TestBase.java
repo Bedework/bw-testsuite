@@ -29,6 +29,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
@@ -50,7 +51,7 @@ public class TestBase {
     HTMLUNIT, FIREFOX, IE, CHROME;
   }
 
-  private static DriverType dType = DriverType.FIREFOX;
+  private static DriverType dType;
 
   private WebDriver driver;
   private Actions actions;
@@ -58,12 +59,35 @@ public class TestBase {
   private static Properties props;
   private static final Object lock = new Object();
 
+  public static final String overridePropfileSysProperty =
+          "org.bedework.testsuite.webtest.overrides";
+
   // Property names
+  /** Driver type */
+  public static final String propDriverType = "driverType";
+
   /** Logout string - found in the URL */
   public static final String propLogoutText = "logoutText";
 
+  public static final String propAdminUser = "adminUser";
+  public static final String propAdminUserPw = "adminUserPw";
+  public static final String propAdminSuperUser = "adminSuperUser";
+  public static final String propAdminSuperUserPw = "adminSuperUserPw";
+
   /** Admin client strings for testing - assumes we are using en_US locale */
+
   public static final String propAdminFooter = "adminFooter";
+
+  // Values for added event
+  public static final String propAdminEventTopicalArea1 =
+          "adminEventTopicalArea1";
+  public static final String propAdminEventLink =
+          "adminEventLink";
+
+
+  public static final String propBedeworkLogo = "bedeworkLogo";
+  public static final String propBedeworkLogoThumb = "bedeworkLogoThumb";
+
   public static final String propAdminEventInfoTitle = "adminEventInfoTitle";
   public static final String propAdminErrorNoTopicalArea =
           "adminErrorUpdateEventTopicalArea";
@@ -77,6 +101,9 @@ public class TestBase {
           "adminErrorUpdateEventNoContact";
 
   /** Public client strings for testing */
+
+  public static final String propPublicHost = "publicHost";
+  public static final String propPublicHome = "publicHome";
   public static final String propPublicFooter = "publicFooter";
 
   /** Personal client strings for testing */
@@ -93,12 +120,30 @@ public class TestBase {
     if (props == null) {
       synchronized (lock) {
         if (props == null) {
-          props = new Properties();
+          final var newProps = new Properties();
           try (final InputStream stream =
             getClass().getResourceAsStream("/webtest.properties")) {
-            props.load(stream);
-          } catch (IOException e) {
+            newProps.load(stream);
+          } catch (final IOException e) {
             throw new RuntimeException(e);
+          }
+
+          final var overrides =
+                  System.getProperty(overridePropfileSysProperty);
+
+          if (overrides == null) {
+            props = newProps;
+          } else {
+            final var overrideProps = new Properties(newProps);
+
+            try (final InputStream stream =
+                         new FileInputStream(overrides)) {
+              overrideProps.load(stream);
+            } catch (final IOException e) {
+              throw new RuntimeException(e);
+            }
+
+            props = overrideProps;
           }
         }
       }
@@ -110,7 +155,7 @@ public class TestBase {
 
   /** Type to be used for tests
    *
-   * @param val
+   * @param val driver type
    */
   public static void setDriverType(final DriverType val) {
     dType = val;
@@ -132,6 +177,9 @@ public class TestBase {
     if (driver != null) {
       return driver;
     }
+
+    setDriverType(DriverType.valueOf(
+            getProperty(propDriverType)));
 
     switch(getDriverType()) {
       case HTMLUNIT:
