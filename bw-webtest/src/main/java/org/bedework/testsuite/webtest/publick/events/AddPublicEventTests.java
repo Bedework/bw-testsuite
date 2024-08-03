@@ -110,9 +110,15 @@ public class AddPublicEventTests extends TestBase {
                containsString(getProperty(propAdminErrorNoContact)));
 
     // select a contact
+    /* Only have search option
     findById("bwContactAllButton").click();
     select = new Select(findById("bwAllContactList"));
     select.selectByIndex(1);
+     */
+
+    // Set text in search box
+    setTextById("bwContactSearch", "co");
+    findByXpath("//div[@id=\"bwContactSearchResults\"]/ul/li[1]");
 
     // FILL in the rest of the form
     // ================================================
