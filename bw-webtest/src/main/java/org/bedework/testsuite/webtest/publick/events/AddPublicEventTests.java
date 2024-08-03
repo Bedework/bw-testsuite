@@ -84,9 +84,7 @@ public class AddPublicEventTests extends TestBase {
                     getProperty(propAdminErrorNoTopicalArea)));
 
     // we must select a topical area to get to the next errors
-    findByXpath("//input[@name='alias' and @value='" +
-                        getProperty(propAdminEventTopicalArea1) +
-                        "']").click();
+    findByXpath(getProperty(propAdminEventTopicalArea1Xpath)).click();
 
     // test next validation error (no location)
     clickByName("addEvent");

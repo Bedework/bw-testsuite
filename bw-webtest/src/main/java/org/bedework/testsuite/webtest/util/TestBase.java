@@ -18,6 +18,8 @@
  */
 package org.bedework.testsuite.webtest.util;
 
+import org.bedework.util.misc.Util;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -57,6 +59,7 @@ public class TestBase {
   private Actions actions;
 
   private static Properties props;
+  private static Util.PropertyFetcher pfetcher;
   private static final Object lock = new Object();
 
   public static final String overridePropfileSysProperty =
@@ -81,9 +84,10 @@ public class TestBase {
   // Values for added event
   public static final String propAdminEventTopicalArea1 =
           "adminEventTopicalArea1";
+  public static final String propAdminEventTopicalArea1Xpath =
+          "adminEventTopicalArea1Xpath";
   public static final String propAdminEventLink =
           "adminEventLink";
-
 
   public static final String propBedeworkLogo = "bedeworkLogo";
   public static final String propBedeworkLogoThumb = "bedeworkLogoThumb";
@@ -145,11 +149,16 @@ public class TestBase {
 
             props = overrideProps;
           }
+
+          // Use Util.propertyReplace to allow property
+          // references in the file(s).
+          pfetcher = new Util.PropertiesPropertyFetcher(props);
         }
       }
     }
 
-    return props.getProperty(name);
+    return Util.propertyReplace(props.getProperty(name),
+                                pfetcher);
   }
 
 
