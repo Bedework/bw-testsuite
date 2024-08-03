@@ -93,9 +93,15 @@ public class AddPublicEventTests extends TestBase {
                containsString(getProperty(propAdminErrorNoLocation)));
 
     // select a location
+    /* Only have search option
     findById("bwLocationAllButton").click();
     select = new Select(findById("bwAllLocationList"));
     select.selectByIndex(1);
+     */
+
+    // Set text in search box
+    setTextById("bwLocationSearch", "loc");
+    findByXpath("//div[@id=\"bwLocationSearchResults\"]/ul/li[1]");
 
     // test next validation error (no contact)
     clickByName("addEvent");
