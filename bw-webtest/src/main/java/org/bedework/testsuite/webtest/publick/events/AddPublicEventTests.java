@@ -33,6 +33,7 @@ import java.util.UUID;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author johnsa
@@ -88,9 +89,9 @@ public class AddPublicEventTests extends TestBase {
 
     // test next validation error (no location)
     clickByName("addEvent");
-    assertThat("Error should be thrown for 'no location': ",
-               findById("errors").getText(),
-               containsString(getProperty(propAdminErrorNoLocation)));
+    failByIdErrorContains(
+            "Error should be shown for 'no location': ",
+            getProperty(propAdminErrorNoLocation));
 
     // select a location
     /* Only have search option
@@ -101,13 +102,20 @@ public class AddPublicEventTests extends TestBase {
 
     // Set text in search box
     setTextById("bwLocationSearch", "loc");
-    findByXpath("//div[@id=\"bwLocationSearchResults\"]/ul/li[1]");
+    final var selectedLoc = findByXpath(
+            "//div[@id=\"bwLocationSearchResults\"]/ul/li[1]");
+    selectedLoc.click();
 
     // test next validation error (no contact)
     clickByName("addEvent");
-    assertThat("Error should be thrown for 'no contact': ",
-               findById("errors").getText(),
-               containsString(getProperty(propAdminErrorNoContact)));
+
+    failByIdErrorDoesNotContain(
+            "Should not have 'no location' error: ",
+            getProperty(propAdminErrorNoLocation));
+
+    failByIdErrorContains(
+            "Error should be shown for 'no contact': ",
+            getProperty(propAdminErrorNoContact));
 
     // select a contact
     /* Only have search option
@@ -118,21 +126,18 @@ public class AddPublicEventTests extends TestBase {
 
     // Set text in search box
     setTextById("bwContactSearch", "co");
-    findByXpath("//div[@id=\"bwContactSearchResults\"]/ul/li[1]");
+    final var selectedContact = findByXpath(
+            "//div[@id=\"bwContactSearchResults\"]/ul/li[1]");
+    selectedContact.click();
 
-    // FILL in the rest of the form
+    // Fill in the rest of the form
     // ================================================
-
-    // select the main calendar (only do the following if we're in as 'admin')
-    /* findById("toggleCalendarListsAll")).click();
-     select = new Select(findById("bwAllCalendars")));
-     select.selectByValue("/public/cals/MainCal"); */
 
     // set the time to 2pm or 14:00; the date should be "today" by default
     select = new Select(findById("eventStartDateHour"));
     if (presentById("eventStartDateAmpm")) {
       // The American way
-      select.selectByIndex(2);
+      select.selectByIndex(1);
       select = new Select(findById("eventStartDateAmpm"));
       select.selectByIndex(1); //pm
     } else {
@@ -157,6 +162,11 @@ public class AddPublicEventTests extends TestBase {
     // submit the event
     clickByName("addEvent");
 
+    if (presentById("errors")) {
+      fail("Errors on submission: " +
+                   findById("errors").getText());
+    }
+
     // ****************************************
     // Now test the event in the public client.
     System.out.println("Event is published.");
@@ -164,15 +174,18 @@ public class AddPublicEventTests extends TestBase {
     try {
       Thread.sleep(10000);
     } catch (final InterruptedException e) {
-      e.printStackTrace();
+      fail("Interrupted while waiting for indexer to get the event in the public client....");
     }
+
     System.out.println("Now checking event in public web client.");
 
     getPublicPage(getProperty(propPublicHome));
 
     // The event should exist today.  It should be on the current page.
     // The following will fail if not found:
-    final WebElement element = findByXpath("//li[@class='titleEvent']/a[contains(text(),'" + uuid + "')]");
+    final WebElement element = findByXpath(
+            "//li[@class='titleEvent']/a[contains(text(),'" +
+                    uuid + "')]");
 
     // We found it, now click the link to visit the event detail page.
     element.click();

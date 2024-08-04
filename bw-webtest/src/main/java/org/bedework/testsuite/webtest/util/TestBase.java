@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -324,6 +325,21 @@ public class TestBase {
 
   public void clickByXpath(final String path) {
     findByXpath(path).click();
+  }
+
+  public void failByIdErrorContains(final String reason,
+                                    final String matchValue) {
+    assertThat(reason,
+               findById("errors").getText(),
+               containsString(matchValue));
+  }
+
+  public void failByIdErrorDoesNotContain(
+          final String reason,
+          final String matchValue) {
+    assertThat(reason,
+               findById("errors").getText(),
+               not(containsString(matchValue)));
   }
 
   public WebElement findById(final String id) {
