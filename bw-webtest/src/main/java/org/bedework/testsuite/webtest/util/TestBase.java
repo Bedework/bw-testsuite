@@ -22,6 +22,7 @@ import org.bedework.util.misc.Util;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -351,6 +352,16 @@ public class TestBase {
 
   public String getTextByXpath(final String path) {
     return findByXpath(path).getText();
+  }
+
+  public boolean presentById(final String id) {
+    try {
+      getWebDriver().findElement(By.id(id));
+      return true;
+    } catch (final NoSuchElementException ignored)
+    {
+      return false;
+    }
   }
 
   public void setTextById(final String id,

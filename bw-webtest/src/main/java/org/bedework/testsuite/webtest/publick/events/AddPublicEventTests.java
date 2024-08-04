@@ -128,9 +128,17 @@ public class AddPublicEventTests extends TestBase {
      select = new Select(findById("bwAllCalendars")));
      select.selectByValue("/public/cals/MainCal"); */
 
-    // set the time to 2pm; the date should be "today" by default
+    // set the time to 2pm or 14:00; the date should be "today" by default
     select = new Select(findById("eventStartDateHour"));
-    select.selectByIndex(14);
+    if (presentById("eventStartDateAmpm")) {
+      // The American way
+      select.selectByIndex(2);
+      select = new Select(findById("eventStartDateAmpm"));
+      select.selectByIndex(1); //pm
+    } else {
+      // Everyone else?
+      select.selectByIndex(14);
+    }
     select = new Select(findById("eventStartDateMinute"));
     select.selectByIndex(0);
 
