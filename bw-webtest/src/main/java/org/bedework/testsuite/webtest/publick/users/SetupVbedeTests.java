@@ -55,7 +55,7 @@ public class SetupVbedeTests extends TestBase {
 
     // In general, we may have to add the user to the page by setting a role
     gotoAdminPage("/principals/users/vbede");
-    if (setCheckboxValueIfNeeded("editAuthUserContentAdmin", true)) {
+    if (setCheckboxValueIfNeeded("editAuthUserApprover", true)) {
       clickByName("modAuthUser");
     }
 
