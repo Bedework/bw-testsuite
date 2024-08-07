@@ -74,37 +74,8 @@ public class TestBase {
   /** Logout string - found in the URL */
   public static final String propLogoutText = "logoutText";
 
-  public static final String propAdminUser = "adminUser";
-  public static final String propAdminUserPw = "adminUserPw";
-  public static final String propAdminSuperUser = "adminSuperUser";
-  public static final String propAdminSuperUserPw = "adminSuperUserPw";
-
-  /** Admin client strings for testing - assumes we are using en_US locale */
-
-  public static final String propAdminFooter = "adminFooter";
-
-  // Values for added event
-  public static final String propAdminEventTopicalArea1 =
-          "adminEventTopicalArea1";
-  public static final String propAdminEventTopicalArea1Xpath =
-          "adminEventTopicalArea1Xpath";
-  public static final String propAdminEventLink =
-          "adminEventLink";
-
   public static final String propBedeworkLogo = "bedeworkLogo";
   public static final String propBedeworkLogoThumb = "bedeworkLogoThumb";
-
-  public static final String propAdminEventInfoTitle = "adminEventInfoTitle";
-  public static final String propAdminErrorNoTopicalArea =
-          "adminErrorUpdateEventTopicalArea";
-  public static final String propAdminErrorNoTitle =
-          "adminErrorUpdateEventNoTitle";
-  public static final String propAdminErrorNoDescription =
-          "adminErrorUpdateEventNoDescription";
-  public static final String propAdminErrorNoLocation =
-          "adminErrorUpdateEventNoLocation";
-  public static final String propAdminErrorNoContact =
-          "adminErrorUpdateEventNoContact";
 
   /** Public client strings for testing */
 
@@ -228,8 +199,22 @@ public class TestBase {
     }
   }
 
+  protected WebElement sendLoginGetFooter(
+          final String user,
+          final String password) {
+    // Log in to the client
+    final WebElement element = driver.findElement(By.name("j_username"));
+    element.sendKeys(user);
+    final var pwElement = driver.findElement(By.name("j_password"));
+    pwElement.sendKeys(password);
+    pwElement.submit();
+
+    // Verify that we are logged in
+    return driver.findElement(By.id("footer"));
+  }
+
   /**
-   * Login to the admin web client
+   * Login to the web client
    */
   public void login(final String client,
                     final String user,
@@ -237,9 +222,6 @@ public class TestBase {
     try {
       final WebDriver driver = getWebDriver();
 
-      if (client.equals("admin")) {
-        driver.get("http://localhost:8080/caladmin");
-      }
       if (client.equals("personal")) {
         driver.get("http://localhost:8080/ucal");
       }
@@ -256,10 +238,6 @@ public class TestBase {
 
       // Verify that we are logged in
       element = driver.findElement(By.id("footer"));
-      if (client.equals("admin")) {
-        assertEquals(element.getText(),
-                     getProperty(propAdminFooter));
-      }
       if (client.equals("personal")) {
         assertEquals(element.getText(),
                      getProperty(propPersonalFooter));
@@ -379,6 +357,16 @@ public class TestBase {
     }
   }
 
+  public boolean presentByXpath(final String path) {
+    try {
+      getWebDriver().findElement(By.xpath(path));
+      return true;
+    } catch (final NoSuchElementException ignored)
+    {
+      return false;
+    }
+  }
+
   public void setTextById(final String id,
                           final String val) {
     findById(id).sendKeys(val);
@@ -403,38 +391,17 @@ public class TestBase {
     return false;
   }
 
-  public void getAdminPage(final String href) {
-    getWebDriver().get(href);
-    checkPage("admin");
-  }
-
   public void getPublicPage(final String href) {
     getWebDriver().get(href);
-    checkPage("public");
+    checkPublicPage();
   }
 
-  public void gotoAdminPage(final String hrefSegment) {
-    findByXpath("//a[contains(@href,'" +
-                             hrefSegment +
-                             "')]").click();
-    checkPage("admin");
-  }
-
-  public void checkPage(final String client) {
+  public void checkPublicPage() {
     final WebElement e = findById("footer");
-    if (client.equals("admin")) {
-      assertThat("Footer must contain correct text: ",
-                 e.getText(),
-                 containsString(getProperty(propAdminFooter)));
-      return;
-    }
 
-    if (client.equals("public")) {
-      assertThat("Footer must contain correct text: ",
-                 e.getText(),
-                 containsString(getProperty(propPublicFooter)));
-      return;
-    }
+    assertThat("Footer must contain correct text: ",
+               e.getText(),
+               containsString(getProperty(propPublicFooter)));
   }
 
   public ExpectedCondition<WebElement> visibilityOfElementLocated(final By locator) {

@@ -18,19 +18,21 @@
  */
 package org.bedework.testsuite.webtest.publick.users;
 
-import org.bedework.testsuite.webtest.util.TestBase;
+import org.bedework.testsuite.webtest.publick.PublicAdminTestBase;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * @author johnsa
  *
  */
-@DisplayName("Setup user vbede for later tests")
-public class SetupVbedeTests extends TestBase {
+@DisplayName("Setup approver user for later tests")
+public class SetupApproverTests extends PublicAdminTestBase {
   private static final String testName = "Setup vbede";
 
 
@@ -45,33 +47,38 @@ public class SetupVbedeTests extends TestBase {
    */
   @Test
   @Order(1)
-  public void doVbedeSetup() {
+  public void doApproverSetup() {
     // Login as a superuser
-    login("admin","admin","bedework");
+    adminLogin(getProperty(propAdminSuperUser),
+               getProperty(propAdminSuperUserPw));
 
-    // get to the user roles page
-    gotoAdminPage("showUsersTab.rdo");
-    gotoAdminPage("authuser/initUpdate.do");
+    userRolesPage();
 
     // In general, we may have to add the user to the page by setting a role
-    gotoAdminPage("/principals/users/vbede");
+    getAdminPageByXref(getProperty(propApproverPrincipal));
     if (setCheckboxValueIfNeeded("editAuthUserApprover", true)) {
       clickByName("modAuthUser");
     }
 
     // Now add to group
-    gotoAdminPage("showUsersTab.rdo");
-    gotoAdminPage("admingroup/initUpdate.do");
-    gotoAdminPage("admingroup/fetchForUpdateMembers.do?b=de&adminGroupName=calsuite-MainCampus");
-
-    // Is vbede in members
-    if (!tableHasElementText("memberAccountList", "vbede")) {
-      setTextById("agMember", "vbede");
-      clickByName("addGroupMember");
-    }
+    adminGroupPage(getProperty(propApproverUserGroupName));
+    addUserMemberIfNeeded(getProperty(propApproverUser));
 
     logout();
-    System.out.println("Test \"" + testName + "\" finished.");
+
+    // Log in to admin client and check visibility of elements
+    adminLogin(getProperty(propApproverUser),
+               getProperty(propApproverUserPw));
+
+    assertThat("Should not see user and system tabs",
+               presentByXpath(getProperty(propAdminTabMainPath)) &&
+                       presentByXpath(getProperty(propAdminTabApprovalqPath)) &&
+                       presentByXpath(getProperty(propAdminTabSuggestionqPath)) &&
+                       presentByXpath(getProperty(propAdminTabPendingqPath)) &&
+                       presentByXpath(getProperty(propAdminTabCalendarSuitePath)) &&
+                       !presentByXpath(getProperty(propAdminTabUsersPath)) &&
+                       !presentByXpath(getProperty(propAdminTabSystemPath)));
+
   }
 
 }
