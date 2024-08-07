@@ -14,11 +14,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * User: mike Date: 8/7/24 Time: 12:05
  */
+@Order(10)
+@DisplayName("Setup non-approver user for later tests")
 public class SetupNonApproverTests extends PublicAdminTestBase {
   /**
    */
   @Test
-  @Order(10)
   @DisplayName("Public events: Set up a non approver and check")
   public void setupUser() {
     // Login as a superuser

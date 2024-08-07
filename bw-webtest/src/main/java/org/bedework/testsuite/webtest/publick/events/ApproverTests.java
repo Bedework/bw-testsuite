@@ -27,7 +27,7 @@ public class ApproverTests extends PublicAdminTestBase {
   /**
    */
   @Test
-  @Order(10)
+  @Order(100)
   @DisplayName("Public events: Add an event and have it approved")
   public void testApproval() {
     final String uuid = UUID.randomUUID().toString();

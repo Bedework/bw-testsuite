@@ -396,6 +396,11 @@ public class TestBase {
     checkPublicPage();
   }
 
+  public void getPublicPageByXpath(final String xpath) {
+    findByXpath(xpath).click();
+    checkPublicPage();
+  }
+
   public void checkPublicPage() {
     final WebElement e = findById("footer");
 

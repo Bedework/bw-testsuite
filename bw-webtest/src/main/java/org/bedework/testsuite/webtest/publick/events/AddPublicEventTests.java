@@ -36,6 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author johnsa
  *
  */
+@Order(110)
 @DisplayName("Public events: Add an event")
 public class AddPublicEventTests extends PublicAdminTestBase {
   private Select select;
@@ -134,7 +135,7 @@ public class AddPublicEventTests extends PublicAdminTestBase {
 
     // The event should exist today.  It should be on the current page.
     // The following will fail if not found:
-    getAdminPageByXpath(
+    getPublicPageByXpath(
             "//div[@id='listEvents']//div[@class='bwSummary']/a[contains(text(),'" +
                     uuid + "')]");
 

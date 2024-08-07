@@ -31,6 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author johnsa
  *
  */
+@Order(20)
 @DisplayName("Setup approver user for later tests")
 public class SetupApproverTests extends PublicAdminTestBase {
   private static final String testName = "Setup vbede";
