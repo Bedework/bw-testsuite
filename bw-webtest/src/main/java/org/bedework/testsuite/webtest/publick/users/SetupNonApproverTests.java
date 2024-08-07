@@ -28,7 +28,7 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
     userRolesPage();
 
     // In general, we may have to add the user to the page by setting a role
-    getAdminPageByXref(getProperty(propNonApproverPrincipal));
+    getAdminPageByHrefSeg(getProperty(propNonApproverPrincipal));
     if (setCheckboxValueIfNeeded("editAuthUserApprover", false)) {
       clickByName("modAuthUser");
     }

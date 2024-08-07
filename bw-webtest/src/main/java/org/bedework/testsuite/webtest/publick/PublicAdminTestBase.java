@@ -35,11 +35,11 @@ public class PublicAdminTestBase extends TestBase {
 
   // Admin - non-approver user
   public static final String propNonApproverUser =
-          "adminUser";
+          "nonApproverUser";
   public static final String propNonApproverPrincipal =
-          "adminPrincipal";
+          "nonApproverPrincipal";
   public static final String propNonApproverUserPw =
-          "adminUserPw";
+          "nonApproverUserPw";
   public static final String propNonApproverUserGroupName =
           "nonApproverUserGroupName";
 
@@ -112,16 +112,20 @@ public class PublicAdminTestBase extends TestBase {
     checkPage();
   }
 
-  public void getAdminPageByXref(final String hrefSegment) {
+  public void getAdminPageByXpath(final String xpath) {
+    findByXpath(xpath).click();
+    checkPage();
+  }
+
+  public void getAdminPageByHrefSeg(final String hrefseg) {
     findByXpath("//a[contains(@href,'" +
-                        hrefSegment +
+                        hrefseg +
                         "')]").click();
     checkPage();
   }
 
   public void addEventPage() {
-    clickByXpath("//a[contains(@href,'initAddEvent.do')]");
-    checkPage();
+    getAdminPageByHrefSeg("initAddEvent.do");
 
     assertEquals(getTextByTag("h2"),
                  getProperty(propAdminEventInfoTitle));
@@ -129,9 +133,9 @@ public class PublicAdminTestBase extends TestBase {
   }
 
   public void adminGroupPage(final String name) {
-    getAdminPageByXref(getProperty(propAdminTabUsersPath));
-    getAdminPageByXref("admingroup/initUpdate.do");
-    getAdminPageByXref("admingroup/fetchForUpdateMembers.do?" +
+    getAdminPageByXpath(getProperty(propAdminTabUsersPath));
+    getAdminPageByHrefSeg("admingroup/initUpdate.do");
+    getAdminPageByHrefSeg("admingroup/fetchForUpdateMembers.do?" +
                                "b=de&adminGroupName=" +
                                name);
   }
@@ -146,13 +150,13 @@ public class PublicAdminTestBase extends TestBase {
   }
 
   public void manageEventsPage() {
-    clickByXpath("//a[contains(@href,'initUpdateEvent.do')]");
+    getAdminPageByHrefSeg("initUpdateEvent.do");
   }
 
   public void userRolesPage() {
     // get to the user roles page
-    getAdminPageByXref(getProperty(propAdminTabUsersPath));
-    getAdminPageByXref("authuser/initUpdate.do");
+    getAdminPageByXpath(getProperty(propAdminTabUsersPath));
+    getAdminPageByHrefSeg("authuser/initUpdate.do");
   }
 
   public void addSummary(final String val) {

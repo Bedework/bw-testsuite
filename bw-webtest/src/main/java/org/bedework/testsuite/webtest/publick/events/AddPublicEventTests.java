@@ -134,7 +134,7 @@ public class AddPublicEventTests extends PublicAdminTestBase {
 
     // The event should exist today.  It should be on the current page.
     // The following will fail if not found:
-    getAdminPageByXref(
+    getAdminPageByXpath(
             "//div[@id='listEvents']//div[@class='bwSummary']/a[contains(text(),'" +
                     uuid + "')]");
 
