@@ -208,7 +208,6 @@ public class TestBase {
     }
 
     driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-    System.out.println("Returning driver.");
 
     return driver;
   }
@@ -327,14 +326,14 @@ public class TestBase {
     findByXpath(path).click();
   }
 
-  public void failByIdErrorContains(final String reason,
-                                    final String matchValue) {
+  public void errorMustContain(final String reason,
+                               final String matchValue) {
     assertThat(reason,
                findById("errors").getText(),
                containsString(matchValue));
   }
 
-  public void failByIdErrorDoesNotContain(
+  public void errorMustNotContain(
           final String reason,
           final String matchValue) {
     assertThat(reason,

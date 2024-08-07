@@ -20,7 +20,6 @@ package org.bedework.testsuite.webtest.publick.events;
 
 import org.bedework.testsuite.webtest.util.TestBase;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -78,18 +77,16 @@ public class AddPublicEventTests extends TestBase {
     // test basic validation without filling in the form
     clickByName("addEvent");
 
-    MatcherAssert.assertThat(
+    errorMustContain(
             "Error should be thrown for no topical area: ",
-            findById("errors").getText(),
-            containsString(
-                    getProperty(propAdminErrorNoTopicalArea)));
+            getProperty(propAdminErrorNoTopicalArea));
 
     // we must select a topical area to get to the next errors
     findByXpath(getProperty(propAdminEventTopicalArea1Xpath)).click();
 
     // test next validation error (no location)
     clickByName("addEvent");
-    failByIdErrorContains(
+    errorMustContain(
             "Error should be shown for 'no location': ",
             getProperty(propAdminErrorNoLocation));
 
@@ -109,11 +106,11 @@ public class AddPublicEventTests extends TestBase {
     // test next validation error (no contact)
     clickByName("addEvent");
 
-    failByIdErrorDoesNotContain(
+    errorMustNotContain(
             "Should not have 'no location' error: ",
             getProperty(propAdminErrorNoLocation));
 
-    failByIdErrorContains(
+    errorMustContain(
             "Error should be shown for 'no contact': ",
             getProperty(propAdminErrorNoContact));
 
@@ -167,24 +164,24 @@ public class AddPublicEventTests extends TestBase {
                    findById("errors").getText());
     }
 
+    /* The event should show up in the manage events list. */
+    clickByXpath("//a[contains(@href,'initUpdateEvent.do')]");
+
+    final WebElement elementOnManageEvents = findByXpath(
+            "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
+                    uuid + "')]");
+
     // ****************************************
     // Now test the event in the public client.
-    System.out.println("Event is published.");
-    System.out.println("Waiting ten seconds for indexer to get the event in the public client....");
-    try {
-      Thread.sleep(10000);
-    } catch (final InterruptedException e) {
-      fail("Interrupted while waiting for indexer to get the event in the public client....");
-    }
-
-    System.out.println("Now checking event in public web client.");
+    System.out.println("Event is published. " +
+                               "Now checking event in public web client.");
 
     getPublicPage(getProperty(propPublicHome));
 
     // The event should exist today.  It should be on the current page.
     // The following will fail if not found:
     final WebElement element = findByXpath(
-            "//li[@class='titleEvent']/a[contains(text(),'" +
+            "//div[@id='listEvents']//div[@class='bwSummary']/a[contains(text(),'" +
                     uuid + "')]");
 
     // We found it, now click the link to visit the event detail page.
@@ -192,7 +189,7 @@ public class AddPublicEventTests extends TestBase {
     System.out.println("Event \"" + uuid + "\" found.");
 
     assertThat("Time should be at \"2:00 PM\": ",
-               findByXpath("//div[@class='eventWhen']/span[@class='time']").getText(),
+               findByXpath("//div[@class='eventWhen']//span[@class='time']").getText(),
                containsString("2:00 PM"));
     System.out.println("Time matches 2:00 PM");
   }
