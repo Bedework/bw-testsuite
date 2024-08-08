@@ -44,6 +44,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author johnsa
@@ -279,7 +280,7 @@ public class TestBase {
    *
    * @param name of checkbox
    * @param value to set if needed
-   * @return true if changed (submmit needed)
+   * @return true if changed (submit needed)
    */
   public boolean setCheckboxValueIfNeeded(final String name,
                                           final boolean value) {
@@ -292,12 +293,39 @@ public class TestBase {
     return true;
   }
 
+  /**
+   *
+   * @param id of radio button
+   * @param value to set if needed
+   * @return true if changed (submit needed)
+   */
+  public boolean setRadioByIdIfNeeded(final String id,
+                                          final boolean value) {
+    final WebElement radio = findById(id);
+    if (radio.isSelected() == value) {
+      return false;
+    }
+
+    radio.click();
+    return true;
+  }
+
   public void clickById(final String id) {
     findById(id).click();
   }
 
   public void clickByName(final String name) {
     findByName(name).click();
+  }
+
+  public void clickByNameNoErrors(final String name,
+                                    final String message) {
+    clickByName(name);
+
+    if (presentById("errors")) {
+      fail(message + ": " +
+                   findById("errors").getText());
+    }
   }
 
   public void clickByXpath(final String path) {

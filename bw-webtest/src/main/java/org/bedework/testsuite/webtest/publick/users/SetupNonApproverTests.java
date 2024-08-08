@@ -34,8 +34,36 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
       clickByName("modAuthUser");
     }
 
-    // Ensure in group.
-    adminGroupPage(getProperty(propNonApproverUserGroupName));
+    // Ensure in non-approver group.
+    adminGroupListPage();
+
+    final var groupName = getProperty(propNonApproverUserGroupName);
+    if (!adminGroupManageMembersPage(groupName)) {
+      // Create group
+      clickAdminButton("admingroup/initAdd.do");
+
+      setTextByName("updAdminGroup.account", groupName);
+      setTextByName("updAdminGroup.description", "For tests");
+      setTextByName("adminGroupGroupOwner", "admin");
+      clickByNameNoErrors("updateAdminGroup",
+                          "Adding non-approver admin group");
+    }
+
+    // Ensure in main group -
+    adminGroupListPage();
+
+    final var parentGroupName = getProperty(propNonApproverGroupParentName);
+
+    assertThat("Admin group " + parentGroupName + " must exist",
+               adminGroupManageMembersPage(parentGroupName));
+    // Need to flag as group
+    setRadioByIdIfNeeded("agGroup", true);
+    addUserMemberIfNeeded(groupName);
+
+    adminGroupListPage();
+
+    assertThat("Admin group " + groupName + " must exist",
+               adminGroupManageMembersPage(groupName));
     addUserMemberIfNeeded(getProperty(propNonApproverUser));
 
     logout();

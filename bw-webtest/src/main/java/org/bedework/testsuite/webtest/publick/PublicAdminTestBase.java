@@ -5,6 +5,7 @@ package org.bedework.testsuite.webtest.publick;
 
 import org.bedework.testsuite.webtest.util.TestBase;
 
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.Select;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -42,6 +43,8 @@ public class PublicAdminTestBase extends TestBase {
           "nonApproverUserPw";
   public static final String propNonApproverUserGroupName =
           "nonApproverUserGroupName";
+  public static final String propNonApproverGroupParentName =
+          "nonApproverGroupParentName";
 
   public static final String propAdminEventInfoTitle =
           "adminEventInfoTitle";
@@ -132,12 +135,21 @@ public class PublicAdminTestBase extends TestBase {
     System.out.println("On " + getProperty(propAdminEventInfoTitle) + " page.");
   }
 
-  public void adminGroupPage(final String name) {
+  public void adminGroupListPage() {
     getAdminPageByXpath(getProperty(propAdminTabUsersPath));
     getAdminPageByHrefSeg("admingroup/initUpdate.do");
-    getAdminPageByHrefSeg("admingroup/fetchForUpdateMembers.do?" +
-                               "b=de&adminGroupName=" +
-                               name);
+  }
+
+  public boolean adminGroupManageMembersPage(final String name) {
+    try {
+      getAdminPageByHrefSeg("admingroup/fetchForUpdateMembers.do?" +
+                                    "b=de&adminGroupName=" +
+                                    name);
+      return true;
+    } catch (final NoSuchElementException ignored)
+    {
+      return false;
+    }
   }
 
   // Positioned by call to adminGroupPage()
@@ -146,7 +158,6 @@ public class PublicAdminTestBase extends TestBase {
       setTextById("agMember", member);
       clickByName("addGroupMember");
     }
-
   }
 
   public void manageEventsPage() {
@@ -226,6 +237,12 @@ public class PublicAdminTestBase extends TestBase {
 
   public void clickAddEvent() {
     clickByName("addEvent");
+  }
+
+  public void clickAdminButton(final String locationSeg) {
+    findByXpath("//input[@type='button' and " +
+                        "contains(@onclick, '" +
+                        locationSeg + "')]").click();
   }
 
   public void clickAddEventNoErrors() {

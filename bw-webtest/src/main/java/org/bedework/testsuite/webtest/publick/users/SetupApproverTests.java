@@ -62,7 +62,13 @@ public class SetupApproverTests extends PublicAdminTestBase {
     }
 
     // Now add to group
-    adminGroupPage(getProperty(propApproverUserGroupName));
+    adminGroupListPage();
+
+    final var groupName = getProperty(propApproverUserGroupName);
+
+    // Assuming group exists for the moment
+    assertThat("Admin group " + groupName + " must exist",
+               adminGroupManageMembersPage(groupName));
     addUserMemberIfNeeded(getProperty(propApproverUser));
 
     logout();
