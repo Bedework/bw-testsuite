@@ -40,7 +40,7 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
     final var groupName = getProperty(propNonApproverUserGroupName);
     if (!adminGroupManageMembersPage(groupName)) {
       // Create group
-      clickAdminButton("admingroup/initAdd.do");
+      clickAdminInputButton("admingroup/initAdd.do");
 
       setTextByName("updAdminGroup.account", groupName);
       setTextByName("updAdminGroup.description", "For tests");

@@ -276,6 +276,31 @@ public class TestBase {
     return checkbox.isSelected();
   }
 
+  public void checkPublicPageForEvent(final String uuid,
+                                      final String time) {
+
+    // ****************************************
+    // Now test the event in the public client.
+    System.out.println("Event is published. " +
+                               "Now checking event in public web client.");
+
+    getPublicPage(getProperty(propPublicHome));
+
+    // The event should exist today.  It should be on the current page.
+    // The following will fail if not found:
+    getPublicPageByXpath(
+            "//div[@id='listEvents']//div[@class='bwSummary']/a[contains(text(),'" +
+                    uuid + "')]");
+
+    System.out.println("Event \"" + uuid + "\" found.");
+
+    assertThat("Time should be at \"" +
+                       time +
+                       "\": ",
+               findByXpath("//div[@class='eventWhen']//span[@class='time']").getText(),
+               containsString(time));
+  }
+
   /**
    *
    * @param name of checkbox

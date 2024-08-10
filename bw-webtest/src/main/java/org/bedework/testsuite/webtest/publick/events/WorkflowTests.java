@@ -15,8 +15,9 @@ import java.util.UUID;
 /**
  * User: mike Date: 8/6/24 Time: 23:25
  */
-@DisplayName("Public events: Approval tests")
-public class ApproverTests extends PublicAdminTestBase {
+@DisplayName("Public events: Workflow tests")
+@Order(120)
+public class WorkflowTests extends PublicAdminTestBase {
   /**
    */
   @AfterEach
@@ -49,6 +50,38 @@ public class ApproverTests extends PublicAdminTestBase {
                   getProperty(propAdminEventLink));
     clickAddEventNoErrors();
 
-    // The event should show up in the approval queue
+    logout();
+
+    // The event should show up in the approval queue for the approver
+    adminLogin(getProperty(propApproverUser),
+               getProperty(propApproverUserPw));
+
+    tabApproverQueue();
+
+    // Need to get event uid from link showing the summary
+
+    final var elementOnAppprovalQ = findByXpath(
+            "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
+                    uuid + "')]");
+
+    final var href = elementOnAppprovalQ.getAttribute("href");
+    final var guidStart = href.indexOf("guid=") + 5;
+    final var guid = href.substring(guidStart,
+                                    href.indexOf('&', guidStart + 1));
+
+    clickAdminButton(guid, "Approve...");
+
+    // Confirm approval on next page
+    findByName("approveEvent").click();
+
+    // Should show up in admin manage events.
+    tabMainMenu();
+    manageEventsPage();
+
+    final var elementOnManageEvents = findByXpath(
+            "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
+                    uuid + "')]");
+
+    checkPublicPageForEvent(uuid, "2:00 PM");
   }
 }

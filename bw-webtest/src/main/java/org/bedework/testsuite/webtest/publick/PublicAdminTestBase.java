@@ -140,6 +140,14 @@ public class PublicAdminTestBase extends TestBase {
     getAdminPageByHrefSeg("admingroup/initUpdate.do");
   }
 
+  public void tabMainMenu() {
+    getAdminPageByXpath(getProperty(propAdminTabMainPath));
+  }
+
+  public void tabApproverQueue() {
+    getAdminPageByXpath(getProperty(propAdminTabApprovalqPath));
+  }
+
   public boolean adminGroupManageMembersPage(final String name) {
     try {
       getAdminPageByHrefSeg("admingroup/fetchForUpdateMembers.do?" +
@@ -239,10 +247,23 @@ public class PublicAdminTestBase extends TestBase {
     clickByName("addEvent");
   }
 
-  public void clickAdminButton(final String locationSeg) {
+  public void clickAdminInputButton(final String locationSeg) {
     findByXpath("//input[@type='button' and " +
                         "contains(@onclick, '" +
                         locationSeg + "')]").click();
+  }
+
+  public void clickAdminButton(final String locationSeg,
+                               final String... value) {
+    final String valuePart;
+    if (value.length == 0) {
+      valuePart = "";
+    } else {
+      valuePart = "and contains(text(), '" + value[0] + "')";
+    }
+    findByXpath("//button[contains(@onclick, '" +
+                        locationSeg + "')" +
+                        valuePart + "]").click();
   }
 
   public void clickAddEventNoErrors() {

@@ -29,9 +29,6 @@ import org.openqa.selenium.support.ui.Select;
 
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 /**
  * @author johnsa
  *
@@ -126,25 +123,6 @@ public class AddPublicEventTests extends PublicAdminTestBase {
             "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
                     uuid + "')]");
 
-    // ****************************************
-    // Now test the event in the public client.
-    System.out.println("Event is published. " +
-                               "Now checking event in public web client.");
-
-    getPublicPage(getProperty(propPublicHome));
-
-    // The event should exist today.  It should be on the current page.
-    // The following will fail if not found:
-    getPublicPageByXpath(
-            "//div[@id='listEvents']//div[@class='bwSummary']/a[contains(text(),'" +
-                    uuid + "')]");
-
-    System.out.println("Event \"" + uuid + "\" found.");
-
-    assertThat("Time should be at \"2:00 PM\": ",
-               findByXpath("//div[@class='eventWhen']//span[@class='time']").getText(),
-               containsString("2:00 PM"));
-    System.out.println("Time matches 2:00 PM");
+    checkPublicPageForEvent(uuid, "2:00 PM");
   }
-
 }
