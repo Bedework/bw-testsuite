@@ -53,8 +53,12 @@ public class WorkflowTests extends PublicAdminTestBase {
     logout();
 
     // The event should show up in the approval queue for the approver
-    adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw));
+    adminLogin(getProperty(propApproverUser2Groups),
+               getProperty(propApproverUser2GroupsPw));
+
+    // Select group
+
+    getAdminPageByHrefSeg(getProperty(propNonApproverUserGroupName));
 
     tabApproverQueue();
 

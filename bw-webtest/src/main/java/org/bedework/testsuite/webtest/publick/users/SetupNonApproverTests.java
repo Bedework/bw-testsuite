@@ -60,11 +60,8 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
     setRadioByIdIfNeeded("agGroup", true);
     addUserMemberIfNeeded(groupName);
 
-    adminGroupListPage();
-
-    assertThat("Admin group " + groupName + " must exist",
-               adminGroupManageMembersPage(groupName));
-    addUserMemberIfNeeded(getProperty(propNonApproverUser));
+    addUserToGroup(groupName,
+                   getProperty(propApproverUserGroupName));
 
     logout();
 

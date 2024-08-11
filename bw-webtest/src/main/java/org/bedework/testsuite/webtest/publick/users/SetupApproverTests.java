@@ -62,14 +62,48 @@ public class SetupApproverTests extends PublicAdminTestBase {
     }
 
     // Now add to group
-    adminGroupListPage();
+    addUserToGroup(getProperty(propApproverUser),
+                   getProperty(propApproverUserGroupName));
 
-    final var groupName = getProperty(propApproverUserGroupName);
+    logout();
 
-    // Assuming group exists for the moment
-    assertThat("Admin group " + groupName + " must exist",
-               adminGroupManageMembersPage(groupName));
-    addUserMemberIfNeeded(getProperty(propApproverUser));
+    // Log in to admin client and check visibility of elements
+    adminLogin(getProperty(propApproverUser),
+               getProperty(propApproverUserPw));
+
+    assertThat("Should not see user and system tabs",
+               presentByXpath(getProperty(propAdminTabMainPath)) &&
+                       presentByXpath(getProperty(propAdminTabApprovalqPath)) &&
+                       presentByXpath(getProperty(propAdminTabSuggestionqPath)) &&
+                       presentByXpath(getProperty(propAdminTabPendingqPath)) &&
+                       presentByXpath(getProperty(propAdminTabCalendarSuitePath)) &&
+                       !presentByXpath(getProperty(propAdminTabUsersPath)) &&
+                       !presentByXpath(getProperty(propAdminTabSystemPath)));
+
+  }
+
+  /**
+   */
+  @Test
+  @Order(2)
+  public void doApprover2GroupsSetup() {
+    // Login as a superuser
+    adminLogin(getProperty(propAdminSuperUser),
+               getProperty(propAdminSuperUserPw));
+
+    userRolesPage();
+
+    // In general, we may have to add the user to the page by setting a role
+    getAdminPageByHrefSeg(getProperty(propApproverPrincipal2Groups));
+    if (setCheckboxValueIfNeeded("editAuthUserApprover", true)) {
+      clickByName("modAuthUser");
+    }
+
+    // Now add to groups
+    addUserToGroup(getProperty(propApproverUser2Groups),
+                   getProperty(propApproverUserGroupName));
+    addUserToGroup(getProperty(propApproverUser2Groups),
+                   getProperty(propNonApproverUserGroupName));
 
     logout();
 

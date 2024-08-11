@@ -46,6 +46,14 @@ public class PublicAdminTestBase extends TestBase {
   public static final String propNonApproverGroupParentName =
           "nonApproverGroupParentName";
 
+  // Admin - approver user
+  public static final String propApproverUser2Groups =
+          "approverUser2Groups";
+  public static final String propApproverPrincipal2Groups =
+          "approverPrincipal2Groups";
+  public static final String propApproverUser2GroupsPw =
+          "approverUser2GroupsPw";
+
   public static final String propAdminEventInfoTitle =
           "adminEventInfoTitle";
   public static final String propAdminErrorNoTopicalArea =
@@ -158,6 +166,16 @@ public class PublicAdminTestBase extends TestBase {
     {
       return false;
     }
+  }
+
+  public void addUserToGroup(final String member,
+                             final String groupName) {
+    adminGroupListPage();
+
+    // Assuming group exists for the moment
+    assertThat("Admin group " + groupName + " must exist",
+               adminGroupManageMembersPage(groupName));
+    addUserMemberIfNeeded(member);
   }
 
   // Positioned by call to adminGroupPage()
