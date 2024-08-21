@@ -10,8 +10,6 @@ import org.openqa.selenium.support.ui.Select;
 
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -33,50 +31,81 @@ public class AddPublicSubTests extends TestBase {
    */
   @Test
   @Order(1000)
-  @DisplayName("Public events: Add apublic event subscription")
+  @DisplayName("Personal events: Add a public event subscription")
   public void testAddPubSub() {
-    final String subFinder = UUID.randomUUID().toString().substring(0, 4);
+    final String subFinder = "-" +
+            UUID.randomUUID().toString().substring(0, 4);
 
     login("personal","vbede","bedework"); // log in as a typical user
 
-    // get to the Add Event page
+    // get to the manage calendars page
     clickByXpath("//a[@class='calManageLink']");
 
-    assertEquals(getTextByTag("h2"),
+    assertEquals(getTextByXpath(
+                         "//table[@class='withNotices']/tbody/tr/" +
+                                 "td[@id='bodyContent']/h2"),
                  getProperty(propUserManageCalTitle));
-    System.out.println("On " + getProperty(propUserManageCalTitle)
-                               + " page.");
+    info("On " + getProperty(propUserManageCalTitle)
+                 + " page.");
+
+    // Ensure no previous subscription
+    final var topicalAreaName = getProperty(propSubTopicalArea1Name);
+    final var navXpath = "//td[@id='sideBar']/ul[@class='calendarTree']//" +
+            "li[@class='alias']/" +
+            "a[contains(text(), '" + topicalAreaName + "')]";
+    final var subXpath = "//table[@id='calendarTable']//ul[@class='calendarTree']//" +
+            "li[@class='alias']/" +
+            "a[contains(text(), '" + topicalAreaName + "')]";
+    if (presentByXpath(navXpath)) {
+      info("Delete already existing subscription");
+
+      clickByXpath("//a[@class='calManageLink']");
+      clickByXpath(subXpath);
+      clickByXpath("//form[@id='modCalForm']//" +
+                           "input[@value='Delete Subscription']");
+      clickByXpath("//input[@value='Yes: Delete Calendar!']");
+    }
 
     // click the add subscription button
     clickById("addSubButton");
 
     // click the public listing toggle
     clickById("subSwitchPublic");
-    clickByXpath("//ul[@id='publicSubscriptionTree']//li[@class='alias']/a = 'Lectures']");
+
+    clickByXpath("//ul[@id='publicSubscriptionTree']//" +
+                         "li[@class='alias']/" +
+                         "a[text()='" + topicalAreaName + "']");
 
     // determine if the display name updated
-    assertEquals(getTextById("intSubDisplayName"),
-                 "Lectures");
+    assertEquals(topicalAreaName,
+                 findById("intSubDisplayName").getAttribute("value"));
     // change to a new display name
-    setTextById("intSubDisplayName", "Lec" + subFinder);
+    setTextById("intSubDisplayName", subFinder);
 
     // add the subscription
     clickById("intSubSubmit");
 
     // *****************************************************************
-    // Now test the subscription is there in the normal calendar listing
-    assertThat("Subscription not created.",
-               getTextByXpath("//td[@id='sidebar']//li[@class='alias']/a = 'Lec'" + subFinder + "]"),
-               containsString(subFinder)); // this is dumb ... should just check for existence
-    System.out.println("Public subscription added.");
+    // Now check the subscription is there in the normal calendar listing
+    // and select it
+    clickByXpath(navXpath);
 
-    // THIS IS TEMPORARY.
-    // just to pause a moment and watch the work prior to teardown.
-    // sleep will be removed.
-    try {
-      Thread.sleep(8000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    info("Public subscription added.");
+
+    // See if any events we added are visible
+
+    final var event = findByXpath(
+            "//table[@id='monthCalendarTable']//" +
+                    "a[contains(text(), '" +
+                    getProperty(propPublicEventTitlePrefix) +
+                    "')]");
+
+    // Now delete the subscription
+    clickByXpath("//a[@class='calManageLink']");
+    clickByXpath(subXpath);
+    clickByXpath("//input[@value='Delete Subscription']");
+    clickByXpath("//input[@value='Yes: Delete Calendar!']");
+
+    findByXpath("//ul[@id='messages']/li[contains(text(), 'Deleted')]");
   }
 }

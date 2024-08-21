@@ -24,7 +24,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
 import java.util.UUID;
@@ -52,7 +51,9 @@ public class AddPublicEventTests extends PublicAdminTestBase {
   @DisplayName("Public events: Add an event")
   public void testProcess() {
     final String uuid = UUID.randomUUID().toString();
-    final String eventTitle = "SELENIUM - CreatePubEventsTest - " + uuid;
+    final String eventTitle =
+            getProperty(propPublicEventTitlePrefix) +
+                    " CreatePubEventsTest - " + uuid;
 
     adminLogin(getProperty(propApproverUser),
                getProperty(propApproverUserPw)); // log in as a typical event admin
@@ -119,10 +120,21 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     /* The event should show up in the manage events list. */
     manageEventsPage();
 
-    final WebElement elementOnManageEvents = findByXpath(
+    findByXpath(
             "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
                     uuid + "')]");
+    logout();
 
     checkPublicPageForEvent(uuid, "2:00 PM");
+
+    // Now remove the event
+    adminLogin(getProperty(propAdminSuperUser),
+               getProperty(propAdminSuperUserPw));
+    manageEventsPage();
+    clickByXpath(
+            "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
+                    uuid + "')]");
+    clickByXpath("//input[@value='Delete Event']");
+    clickByXpath("//input[@value='Yes: Delete Event']");
   }
 }

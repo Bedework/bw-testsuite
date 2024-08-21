@@ -94,6 +94,12 @@ public class TestBase {
   public static final String propSubmissionsFooter =
           "submissionsFooter";
 
+  public static final String propPublicEventTitlePrefix =
+          "publicEventTitlePrefix";
+
+  public static final String propSubTopicalArea1Name =
+          "subTopicalArea1Name";
+
   public String getProperty(final String name) {
     if (props == null) {
       synchronized (lock) {
@@ -135,6 +141,9 @@ public class TestBase {
                                 pfetcher);
   }
 
+  public void info(final String msg) {
+    System.out.println(msg);
+  }
 
   /** Type to be used for tests
    *
@@ -196,7 +205,7 @@ public class TestBase {
    */
   public void closeDriver() {
     if (driver != null) {
-      driver.quit();
+      driver.close();
     }
   }
 
@@ -404,8 +413,7 @@ public class TestBase {
     try {
       getWebDriver().findElement(By.id(id));
       return true;
-    } catch (final NoSuchElementException ignored)
-    {
+    } catch (final NoSuchElementException ignored) {
       return false;
     }
   }
@@ -414,8 +422,7 @@ public class TestBase {
     try {
       getWebDriver().findElement(By.xpath(path));
       return true;
-    } catch (final NoSuchElementException ignored)
-    {
+    } catch (final NoSuchElementException ignored) {
       return false;
     }
   }

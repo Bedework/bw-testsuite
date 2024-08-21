@@ -32,7 +32,9 @@ public class WorkflowTests extends PublicAdminTestBase {
   @DisplayName("Public events: Add an event and have it approved")
   public void testApproval() {
     final String uuid = UUID.randomUUID().toString();
-    final String eventTitle = "SELENIUM - CreatePubEventsTest - " + uuid;
+    final String eventTitle =
+            getProperty(propPublicEventTitlePrefix) +
+                    " CreatePubEventsTest - " + uuid;
 
     adminLogin(getProperty(propNonApproverUser),
                getProperty(propNonApproverUserPw));

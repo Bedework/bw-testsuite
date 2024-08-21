@@ -1,0 +1,7 @@
+= Public admin
+
+* Events
+** Manage events as approver
+*** Add nonrecurring event and ensure displayed in public client and manage events list
+*** Approve an event created by non-approver and check
+*** Delete the event(s) -

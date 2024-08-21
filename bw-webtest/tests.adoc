@@ -1,0 +1,20 @@
+= Testing system with Junit and Selenium
+
+Still need to reinitialise system with set of data.
+
+== Public
+
+=== Administration
+
+==== Approver User
+Either explicit access or because of group membership
+
+===== Setup user.
+Ensure we can set roles and add to appropriate groups.
+
+===== Add an event
+Add a public event. Test errors when not filled in compltely. Show it turns up in the manage events window and in the public client
+
+=== Submission
+
+== Personal/Group
