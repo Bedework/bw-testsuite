@@ -47,7 +47,6 @@ public class AddPublicEventTests extends PublicAdminTestBase {
   /**
    */
   @Test
-  @Order(10)
   @DisplayName("Public events: Add an event")
   public void testProcess() {
     final String uuid = UUID.randomUUID().toString();

@@ -107,8 +107,8 @@ public class PublicAdminTestBase extends TestBase {
                  getProperty(propAdminFooter));
 
     // Output the footer text:
-    System.out.println("Logged into admin client as user \"" +
-                               user + "\"");
+    info("Logged into admin client as user \"" +
+                 user + "\"");
   }
 
   public void checkPage() {

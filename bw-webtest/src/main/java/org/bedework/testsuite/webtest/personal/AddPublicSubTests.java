@@ -1,12 +1,9 @@
 package org.bedework.testsuite.webtest.personal;
 
-import org.bedework.testsuite.webtest.util.TestBase;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.support.ui.Select;
 
 import java.util.UUID;
 
@@ -17,9 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  */
 @DisplayName("Personal events")
-public class AddPublicSubTests extends TestBase {
-  private Select select;
-
+@Order(5000)
+public class AddPublicSubTests extends PersonalTestBase {
   /**
    */
   @AfterEach
@@ -30,13 +26,13 @@ public class AddPublicSubTests extends TestBase {
   /**
    */
   @Test
-  @Order(1000)
   @DisplayName("Personal events: Add a public event subscription")
   public void testAddPubSub() {
     final String subFinder = "-" +
             UUID.randomUUID().toString().substring(0, 4);
 
-    login("personal","vbede","bedework"); // log in as a typical user
+    personalLogin(getProperty(propPersonalUser),
+          getProperty(propPersonalPw));
 
     // get to the manage calendars page
     clickByXpath("//a[@class='calManageLink']");

@@ -16,7 +16,7 @@ import java.util.UUID;
  * User: mike Date: 8/6/24 Time: 23:25
  */
 @DisplayName("Public events: Workflow tests")
-@Order(120)
+@Order(1000)
 public class WorkflowTests extends PublicAdminTestBase {
   /**
    */
@@ -28,7 +28,6 @@ public class WorkflowTests extends PublicAdminTestBase {
   /**
    */
   @Test
-  @Order(100)
   @DisplayName("Public events: Add an event and have it approved")
   public void testApproval() {
     final String uuid = UUID.randomUUID().toString();
@@ -39,8 +38,9 @@ public class WorkflowTests extends PublicAdminTestBase {
     adminLogin(getProperty(propNonApproverUser),
                getProperty(propNonApproverUserPw));
     addEventPage();
+
     addSummary(eventTitle);
-    addDescription("selenium test description");
+    addDescription("bedework public event test description");
     setDefaultTopicalArea();
     setALocation();
     setAContact();

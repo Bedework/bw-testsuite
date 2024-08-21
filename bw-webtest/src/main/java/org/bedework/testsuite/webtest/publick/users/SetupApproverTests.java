@@ -47,7 +47,6 @@ public class SetupApproverTests extends PublicAdminTestBase {
   /**
    */
   @Test
-  @Order(1)
   public void doApproverSetup() {
     // Login as a superuser
     adminLogin(getProperty(propAdminSuperUser),
@@ -85,7 +84,6 @@ public class SetupApproverTests extends PublicAdminTestBase {
   /**
    */
   @Test
-  @Order(2)
   public void doApprover2GroupsSetup() {
     // Login as a superuser
     adminLogin(getProperty(propAdminSuperUser),

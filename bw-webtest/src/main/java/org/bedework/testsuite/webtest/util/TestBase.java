@@ -42,7 +42,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -83,16 +82,6 @@ public class TestBase {
   public static final String propPublicHost = "publicHost";
   public static final String propPublicHome = "publicHome";
   public static final String propPublicFooter = "publicFooter";
-
-  /** Personal client strings for testing */
-  public static final String propPersonalFooter =
-          "personalFooter";
-  public static final String propUserManageCalTitle =
-          "userManageCalTitle";
-
-  /** Submissions client strings for testing */
-  public static final String propSubmissionsFooter =
-          "submissionsFooter";
 
   public static final String propPublicEventTitlePrefix =
           "publicEventTitlePrefix";
@@ -221,49 +210,6 @@ public class TestBase {
 
     // Verify that we are logged in
     return driver.findElement(By.id("footer"));
-  }
-
-  /**
-   * Login to the web client
-   */
-  public void login(final String client,
-                    final String user,
-                    final String password) {
-    try {
-      final WebDriver driver = getWebDriver();
-
-      if (client.equals("personal")) {
-        driver.get("http://localhost:8080/ucal");
-      }
-      if (client.equals("submissions")) {
-        driver.get("http://localhost:8080/eventsubmit");
-      }
-
-      // Log in to the client
-      WebElement element = driver.findElement(By.name("j_username"));
-      element.sendKeys(user);
-      element = driver.findElement(By.name("j_password"));
-      element.sendKeys(password);
-      element.submit();
-
-      // Verify that we are logged in
-      element = driver.findElement(By.id("footer"));
-      if (client.equals("personal")) {
-        assertEquals(element.getText(),
-                     getProperty(propPersonalFooter));
-      }
-      if (client.equals("submissions")) {
-        assertThat("Submissions footer not found.",
-                   element.getText(),
-                   containsString(getProperty(propSubmissionsFooter)));
-      }
-
-      // Output the footer text:
-      System.out.println("Logged into " + client + " client as user \"" + user + "\"");
-    } catch (Throwable t) {
-      t.printStackTrace();
-      throw new RuntimeException(t);
-    }
   }
 
   public void logout() {
