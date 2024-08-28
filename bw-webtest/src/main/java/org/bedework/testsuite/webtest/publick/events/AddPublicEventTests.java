@@ -55,7 +55,7 @@ public class AddPublicEventTests extends PublicAdminTestBase {
                     " CreatePubEventsTest - " + uuid;
 
     adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw)); // log in as a typical event admin
+               getProperty(propApproverUserPw));
 
     // get to the Add Event page
     addEventPage();

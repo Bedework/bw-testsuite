@@ -156,6 +156,10 @@ public class PublicAdminTestBase extends TestBase {
     getAdminPageByXpath(getProperty(propAdminTabApprovalqPath));
   }
 
+  public void tabPendingQueue() {
+    getAdminPageByXpath(getProperty(propAdminTabPendingqPath));
+  }
+
   public boolean adminGroupManageMembersPage(final String name) {
     try {
       getAdminPageByHrefSeg("admingroup/fetchForUpdateMembers.do?" +

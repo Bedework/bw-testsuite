@@ -48,5 +48,26 @@ public class SimpleSubmitEventTests extends SubmissionTestBase {
 
     setTextByName("xBwEmailHolder", "example@example.org");
     clickSubmitEventNoErrors();
+
+    // Should be in list of own pending events
+
+    clickByXpath("//ul[@id='menuTabs']/li/" +
+                         "a[contains(@href, 'initPendingEvents.do')]");
+
+    findByXpath("//table[@id='commonListTable']//" +
+                        "a[contains(text(), '" + uuid + "')]");
+
+    logout();
+
+    // ================ Check pending queue and claim it
+    adminLogin(getProperty(propApproverUser),
+               getProperty(propApproverUserPw));
+
+    tabPendingQueue();
+
+    clickByXpath("//table[@id='commonListTable']//" +
+                         "a[contains(text(), '" + uuid + "')]");
+    clickByXpath("//form[@id='bwEventForm']//" +
+                         "input[@value='Claim Event']");
   }
 }
