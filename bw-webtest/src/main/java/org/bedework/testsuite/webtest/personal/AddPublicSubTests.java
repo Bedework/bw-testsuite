@@ -62,6 +62,7 @@ public class AddPublicSubTests extends PersonalTestBase {
       clickByXpath("//input[@value='Yes: Delete Calendar!']");
     }
 
+    info("About to subscribe to " + topicalAreaName);
     // click the add subscription button
     clickById("addSubButton");
 
@@ -80,6 +81,8 @@ public class AddPublicSubTests extends PersonalTestBase {
 
     // add the subscription
     clickById("intSubSubmit");
+
+    info("Public subscription added: about to test for, and click, link.");
 
     // *****************************************************************
     // Now check the subscription is there in the normal calendar listing
