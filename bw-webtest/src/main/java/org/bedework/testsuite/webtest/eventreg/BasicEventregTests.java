@@ -38,38 +38,9 @@ public class BasicEventregTests extends EventregBase {
    */
   @AfterEach
   public void tearDownAfterTest() {
-    // Try to remove any of our events.
-
     try {
-      // Try a logout - just in case a failure left us logged in
-      try {
-        logout();
-      } catch (final Throwable ignored) {}
-      // Login as a superuser
-      adminLogin(getProperty(propAdminSuperUser),
-                 getProperty(propAdminSuperUserPw));
-      eventsListPage();
-      var found = false;
-      do {
-        found = false;
-        final var tbody = findById("commonListTableBody");
-        for (final var link: tbody.findElements(By.tagName("a"))) {
-          System.out.println("Found link: " + link.getText());
-          if (link.getText().contains(
-                  getProperty(propEventregTitlePrefix))) {
-            link.click();
-            findByName("delete").click();
-            // Confirm
-            findByName("delete").click();
-            found = true;
-            break;
-          }
-        }
-      } while (found);
+      cleanUpAdmin();
     } finally {
-      try {
-        logout();
-      } catch (final Throwable ignored) {}
       closeDriver();
     }
   }
@@ -96,7 +67,7 @@ public class BasicEventregTests extends EventregBase {
     setCheckboxValueIfNeeded("bwIsRegisterableEvent", true);
 
     // An alert should show up
-    getWebDriver().switchTo().alert().accept();
+    // getWebDriver().switchTo().alert().accept();
 
     // Click on add/manage and authenticate
 
@@ -131,7 +102,41 @@ public class BasicEventregTests extends EventregBase {
                findByTag("p").getText(),
                containsString("Thank you! Your request for"));
 
-    getWebDriver().get("logout.do");
+    findByAttribute("href='logout.do'").click();
     toDefault();
+  }
+
+  private void cleanUpAdmin() {
+    // Try to remove any of our events.
+
+    try {
+      // Try a logout - just in case a failure left us logged in
+      try {
+        logout();
+      } catch (final Throwable ignored) {}
+      // Login as a superuser
+      adminLogin(getProperty(propAdminSuperUser),
+                 getProperty(propAdminSuperUserPw));
+      eventsListPage();
+      var found = false;
+      do {
+        found = false;
+        final var tbody = findById("commonListTableBody");
+        for (final var link: tbody.findElements(By.tagName("a"))) {
+          System.out.println("Found link: " + link.getText());
+          if (link.getText().contains(
+                  getProperty(propEventregTitlePrefix))) {
+            link.click();
+            findByName("delete").click();
+            // Confirm
+            findByName("delete").click();
+            found = true;
+            break;
+          }
+        }
+      } while (found);
+    } finally {
+      logout();
+    }
   }
 }
