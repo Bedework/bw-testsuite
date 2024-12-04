@@ -37,19 +37,11 @@ public class WorkflowTests extends PublicAdminTestBase {
 
     adminLogin(getProperty(propNonApproverUser),
                getProperty(propNonApproverUserPw));
-    addEventPage();
 
-    addSummary(eventTitle);
-    addDescription("bedework public event test description");
-    setDefaultTopicalArea();
-    setALocation();
-    setAContact();
-    setTime();
-
-    // set the cost and link
-    setTextByName("eventCost", "FREE");
-    setTextByName("eventLink",
-                  getProperty(propAdminEventLink));
+    startAddEvent(eventTitle,
+                  "bedework public event test description", "FREE",
+                  getProperty(propAdminEventLink),
+                  null, null);
     clickAddEventNoErrors();
 
     logout();

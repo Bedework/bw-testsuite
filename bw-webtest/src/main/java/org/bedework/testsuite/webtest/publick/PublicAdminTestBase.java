@@ -56,6 +56,8 @@ public class PublicAdminTestBase extends TestBase {
 
   public static final String propAdminEventInfoTitle =
           "adminEventInfoTitle";
+  public static final String propAdminManageEventsTitle =
+          "adminManageEventsTitle";
   public static final String propAdminErrorNoTopicalArea =
           "adminErrorUpdateEventTopicalArea";
   public static final String propAdminErrorNoTitle =
@@ -111,6 +113,47 @@ public class PublicAdminTestBase extends TestBase {
                  user + "\"");
   }
 
+  public void startAddEvent(final String summary,
+                            final String description) {
+    // get to the Add Event page
+    addEventPage();
+
+    // Page requires summary, description before submit button works
+
+    addSummary(summary);
+    addDescription(description);
+  }
+
+  public void startAddEvent(final String summary,
+                            final String description,
+                            final String cost,
+                            final String eventLink,
+                            final String imageThumbURL,
+                            final String imageURL) {
+    // get to the Add Event page
+    addEventPage();
+
+    // Page requires summary, description before submit button works
+
+    addSummary(summary);
+    addDescription(description);
+    setDefaultTopicalArea();
+    setALocation();
+    setAContact();
+    setTime();
+
+    // set the cost and link
+    setTextByName("eventCost", cost);
+    if (eventLink != null) {
+      setTextByName("eventLink", eventLink);
+    }
+
+    if (imageThumbURL != null) {
+      setTextByName("xBwImageHolder", imageURL);
+      setTextByName("xBwImageThumbHolder", imageThumbURL);
+    }
+  }
+
   public void checkPage() {
     final var e = findById("footer");
     assertThat("Footer must contain correct text: ",
@@ -135,12 +178,27 @@ public class PublicAdminTestBase extends TestBase {
     checkPage();
   }
 
+  public void getAdminPageById(final String id) {
+    findById(id).click();
+    checkPage();
+  }
+
   public void addEventPage() {
     getAdminPageByHrefSeg("initAddEvent.do");
 
     assertEquals(getTextByTag("h2"),
                  getProperty(propAdminEventInfoTitle));
     System.out.println("On " + getProperty(propAdminEventInfoTitle) + " page.");
+  }
+
+  public void eventsListPage() {
+    getAdminPageById("manageEventsLink");
+
+    assertEquals(getTextByTag("h2"),
+                 getProperty(propAdminManageEventsTitle));
+    System.out.println(
+            "On " + getProperty(propAdminManageEventsTitle) +
+                    " page.");
   }
 
   public void adminGroupListPage() {

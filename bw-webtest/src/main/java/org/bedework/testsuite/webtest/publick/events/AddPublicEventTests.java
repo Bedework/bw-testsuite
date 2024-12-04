@@ -24,7 +24,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.support.ui.Select;
 
 import java.util.UUID;
 
@@ -35,8 +34,6 @@ import java.util.UUID;
 @Order(110)
 @DisplayName("Public events: Add an event")
 public class AddPublicEventTests extends PublicAdminTestBase {
-  private Select select;
-
   /**
    */
   @AfterEach
@@ -58,12 +55,8 @@ public class AddPublicEventTests extends PublicAdminTestBase {
                getProperty(propApproverUserPw));
 
     // get to the Add Event page
-    addEventPage();
-
-    // Page requires summary, description before submit button works
-
-    addSummary(eventTitle);
-    addDescription("selenium test description");
+    startAddEvent(eventTitle,
+                  "selenium test description");
 
     // test basic validation without filling in the form
     clickAddEvent();

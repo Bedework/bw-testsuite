@@ -20,6 +20,9 @@ package org.bedework.testsuite.webtest.util;
 
 import org.bedework.util.misc.Util;
 
+import net.fortuna.ical4j.model.Dur;
+import net.fortuna.ical4j.model.property.DtStart;
+import org.apache.commons.lang3.SystemUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
@@ -35,7 +38,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -64,6 +67,8 @@ public class TestBase {
   private static Util.PropertyFetcher pfetcher;
   private static final Object lock = new Object();
 
+  protected static boolean isMac = SystemUtils.IS_OS_MAC;
+
   public static final String overridePropfileSysProperty =
           "org.bedework.testsuite.webtest.overrides";
 
@@ -88,6 +93,39 @@ public class TestBase {
 
   public static final String propSubTopicalArea1Name =
           "subTopicalArea1Name";
+
+  public String getDateAfter(final String duration) {
+    final var dur = new Dur(duration);
+    final var tm = dur.getTime(new Date());
+    final var dt = new DtStart(new net.fortuna.ical4j.model.Date(tm));
+
+    return dt.toString();
+  }
+
+  public void setDateAfterByName(final String fieldName,
+                                 final String duration) {
+    /*
+    /html/body/div[2]/div/a[2]
+     */
+    final var element = findByName(fieldName);
+    element.click();
+
+    // Date picker should be up
+
+    final var datePickDiv = findById("ui-datepicker-div");
+    // Move on one month
+    datePickDiv.findElement(
+            By.cssSelector("[data-handler='next']")).click();
+    // Go for the 27th
+    final List<WebElement> links = datePickDiv.findElements(
+            By.tagName("a"));
+
+    for (final var el: links) {
+      if ("27".equals(el.getText())) {
+        el.click();
+      }
+    }
+  }
 
   public String getProperty(final String name) {
     if (props == null) {
@@ -177,7 +215,8 @@ public class TestBase {
         break;
     }
 
-    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+    driver.manage().timeouts().implicitlyWait(
+            java.time.Duration.ofSeconds(10));
 
     return driver;
   }
@@ -198,7 +237,16 @@ public class TestBase {
     }
   }
 
-  protected WebElement sendLoginGetFooter(
+  protected void toIframe(final String id) {
+    final var iframe = getWebDriver().findElement(By.id(id));
+    getWebDriver().switchTo().frame(iframe);
+  }
+
+  protected void toDefault() {
+    getWebDriver().switchTo().defaultContent();
+  }
+
+  protected void sendLogin(
           final String user,
           final String password) {
     // Log in to the client
@@ -207,6 +255,12 @@ public class TestBase {
     final var pwElement = driver.findElement(By.name("j_password"));
     pwElement.sendKeys(password);
     pwElement.submit();
+  }
+
+  protected WebElement sendLoginGetFooter(
+          final String user,
+          final String password) {
+    sendLogin(user, password);
 
     // Verify that we are logged in
     return driver.findElement(By.id("footer"));
@@ -343,6 +397,11 @@ public class TestBase {
     return getWebDriver().findElement(By.xpath(path));
   }
 
+  public WebElement findByAttribute(final String attr) {
+    return getWebDriver().findElement(
+            By.cssSelector("[" + attr + "]"));
+  }
+
   public String getTextById(final String id) {
     return findById(id).getText();
   }
@@ -387,7 +446,7 @@ public class TestBase {
                                             final String val) {
     final var table = findById(id);
     final List<WebElement> cells =
-            getWebDriver().findElements(By.tagName("td"));
+            table.findElements(By.tagName("td"));
 
     for (final var cell: cells) {
       if (cell.getText().equals(val)) {
@@ -416,14 +475,12 @@ public class TestBase {
   }
 
   public ExpectedCondition<WebElement> visibilityOfElementLocated(final By locator) {
-    return new ExpectedCondition<WebElement>() {
-      public WebElement apply(final WebDriver driver) {
-        final WebElement toReturn = driver.findElement(locator);
-        if (toReturn.isDisplayed()) {
-          return toReturn;
-        }
-        return null;
+    return driver -> {
+      final WebElement toReturn = driver.findElement(locator);
+      if (toReturn.isDisplayed()) {
+        return toReturn;
       }
+      return null;
     };
   }
 }
