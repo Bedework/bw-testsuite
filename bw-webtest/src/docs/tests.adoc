@@ -5,3 +5,10 @@
 *** Add nonrecurring event and ensure displayed in public client and manage events list
 *** Approve an event created by non-approver and check
 *** Delete the event(s) -
+
+
+== More tests needed
+
+* Add and delete a calsuite - check access ok
+* Force user creation - check prefs etc ok
+* Update prefs, views etc.
