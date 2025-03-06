@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -303,10 +304,13 @@ public class TestBase {
 
     System.out.println("Event \"" + uuid + "\" found.");
 
+    final var actual = findByXpath("//div[@class='eventWhen']//span[@class='time']").getText();
+    System.out.println(format("Actual time is \"%s\" required \"%s\"", actual, time));
+
     assertThat("Time should be at \"" +
                        time +
                        "\": ",
-               findByXpath("//div[@class='eventWhen']//span[@class='time']").getText(),
+               actual,
                containsString(time));
   }
 
