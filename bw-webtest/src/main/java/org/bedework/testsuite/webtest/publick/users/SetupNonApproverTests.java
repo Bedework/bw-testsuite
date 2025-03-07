@@ -65,9 +65,13 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
 
     logout();
 
+    final var nonApproverUser = getProperty(propNonApproverUser);
+    System.out.printf("Try login as non-approver %s\n",
+                      nonApproverUser);
+
     // Log in to admin client and check visibility of elements
-    adminLogin(getProperty(propNonApproverUser),
-          getProperty(propNonApproverUserPw));
+    adminLogin(nonApproverUser,
+               getProperty(propNonApproverUserPw));
 
     assertThat("Should see main and approval q tabs only",
                presentByXpath(getProperty(propAdminTabMainPath)) &&
@@ -77,5 +81,7 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
                        !presentByXpath(getProperty(propAdminTabCalendarSuitePath)) &&
                        !presentByXpath(getProperty(propAdminTabUsersPath)) &&
                        !presentByXpath(getProperty(propAdminTabSystemPath)));
+
+    logout();
   }
 }
