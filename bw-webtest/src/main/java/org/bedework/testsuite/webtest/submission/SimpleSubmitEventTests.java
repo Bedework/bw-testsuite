@@ -26,7 +26,7 @@ public class SimpleSubmitEventTests extends SubmissionTestBase {
   /**
    */
   @Test
-  @DisplayName("Submit events: Submit a public event tha is accepted")
+  @DisplayName("Submit events: Submit a public event that is accepted")
   public void testSubmit() {
     final String uuid = UUID.randomUUID().toString();
     final String eventTitle =
