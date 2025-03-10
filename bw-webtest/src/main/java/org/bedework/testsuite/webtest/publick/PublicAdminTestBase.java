@@ -97,7 +97,9 @@ public class PublicAdminTestBase extends TestBase {
    * Login to the admin web client
    */
   public void adminLogin(final String user,
-                         final String password) {
+                         final String password,
+                         final String purpose) {
+    msg("About to log in to admin client for %s\n", purpose);
     final var driver = getWebDriver();
 
     driver.get(getProperty(propAdminHome));
@@ -109,7 +111,7 @@ public class PublicAdminTestBase extends TestBase {
                  getProperty(propAdminFooter));
 
     // Output the footer text:
-    info("Logged into admin client as user \"" +
+    msg("Logged into admin client as user \"" +
                  user + "\"");
   }
 

@@ -40,7 +40,7 @@ public class PersonalTestBase extends TestBase {
                  getProperty(propPersonalFooter));
 
     // Output the footer text:
-    info("Logged into personal client as user \"" +
+    msg("Logged into personal client as user \"" +
                  user + "\"");
   }
 }

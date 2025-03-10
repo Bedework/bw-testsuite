@@ -57,7 +57,8 @@ public class BasicEventregTests extends EventregBase {
                     " EventregTest - " + uuid;
 
     adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw));
+               getProperty(propApproverUserPw),
+               "add an event and register a user");
 
     startAddEvent(eventTitle,
                   "bedework eventreg test description", "FREE",
@@ -116,7 +117,8 @@ public class BasicEventregTests extends EventregBase {
       } catch (final Throwable ignored) {}
       // Login as a superuser
       adminLogin(getProperty(propAdminSuperUser),
-                 getProperty(propAdminSuperUserPw));
+                 getProperty(propAdminSuperUserPw),
+                 "Clean up for admin");
       eventsListPage();
       var found = false;
       do {

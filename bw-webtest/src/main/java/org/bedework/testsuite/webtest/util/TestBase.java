@@ -169,10 +169,6 @@ public class TestBase {
                                 pfetcher);
   }
 
-  public void info(final String msg) {
-    System.out.println(msg);
-  }
-
   /** Type to be used for tests
    *
    * @param val driver type
@@ -486,5 +482,13 @@ public class TestBase {
       }
       return null;
     };
+  }
+
+  protected void msg(final String msg) {
+    System.out.println(msg);
+  }
+
+  protected void msg(final String msg, final String... msgPars) {
+    System.out.printf(msg, msgPars);
   }
 }

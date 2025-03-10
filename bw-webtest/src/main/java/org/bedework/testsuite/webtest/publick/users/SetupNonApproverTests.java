@@ -24,8 +24,10 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
   public void setupUser() {
     // Login as a superuser
     adminLogin(getProperty(propAdminSuperUser),
-               getProperty(propAdminSuperUserPw));
+               getProperty(propAdminSuperUserPw),
+               "set up non-approver user");
 
+    msg("Visit admin user roles page");
     userRolesPage();
 
     // In general, we may have to add the user to the page by setting a role
@@ -35,10 +37,12 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
     }
 
     // Ensure in non-approver group.
+    msg("Visit admin group list page");
     adminGroupListPage();
 
     final var groupName = getProperty(propNonApproverUserGroupName);
     if (!adminGroupManageMembersPage(groupName)) {
+      msg("Create admin group");
       // Create group
       clickAdminInputButton("admingroup/initAdd.do");
 
@@ -50,28 +54,33 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
     }
 
     // Ensure in main group -
+    msg("Revisit admin group list page");
     adminGroupListPage();
 
     final var parentGroupName = getProperty(propNonApproverGroupParentName);
 
+    msg("Ensure parent page exists");
     assertThat("Admin group " + parentGroupName + " must exist",
                adminGroupManageMembersPage(parentGroupName));
     // Need to flag as group
     setRadioByIdIfNeeded("agGroup", true);
     addUserMemberIfNeeded(groupName);
 
+    msg("Add non-approver group to parent group");
     addUserToGroup(groupName,
                    getProperty(propApproverUserGroupName));
 
+    msg("Logging out from non-approver setup");
     logout();
 
     final var nonApproverUser = getProperty(propNonApproverUser);
-    System.out.printf("Try login as non-approver %s\n",
-                      nonApproverUser);
+    msg("Try login as non-approver %s\n",
+        nonApproverUser);
 
     // Log in to admin client and check visibility of elements
     adminLogin(nonApproverUser,
-               getProperty(propNonApproverUserPw));
+               getProperty(propNonApproverUserPw),
+               "check non-approver tabs");
 
     assertThat("Should see main and approval q tabs only",
                presentByXpath(getProperty(propAdminTabMainPath)) &&

@@ -50,7 +50,8 @@ public class SetupApproverTests extends PublicAdminTestBase {
   public void doApproverSetup() {
     // Login as a superuser
     adminLogin(getProperty(propAdminSuperUser),
-               getProperty(propAdminSuperUserPw));
+               getProperty(propAdminSuperUserPw),
+               "set up approver user");
 
     userRolesPage();
 
@@ -68,7 +69,8 @@ public class SetupApproverTests extends PublicAdminTestBase {
 
     // Log in to admin client and check visibility of elements
     adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw));
+               getProperty(propApproverUserPw),
+               "check approver tabs");
 
     assertThat("Should not see user and system tabs",
                presentByXpath(getProperty(propAdminTabMainPath)) &&
@@ -78,7 +80,7 @@ public class SetupApproverTests extends PublicAdminTestBase {
                        presentByXpath(getProperty(propAdminTabCalendarSuitePath)) &&
                        !presentByXpath(getProperty(propAdminTabUsersPath)) &&
                        !presentByXpath(getProperty(propAdminTabSystemPath)));
-
+    logout();
   }
 
   /**
@@ -87,7 +89,8 @@ public class SetupApproverTests extends PublicAdminTestBase {
   public void doApprover2GroupsSetup() {
     // Login as a superuser
     adminLogin(getProperty(propAdminSuperUser),
-               getProperty(propAdminSuperUserPw));
+               getProperty(propAdminSuperUserPw),
+               "set up approver user in 2 groups");
 
     userRolesPage();
 
@@ -107,7 +110,8 @@ public class SetupApproverTests extends PublicAdminTestBase {
 
     // Log in to admin client and check visibility of elements
     adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw));
+               getProperty(propApproverUserPw),
+               "as approver to check tabs");
 
     assertThat("Should not see user and system tabs",
                presentByXpath(getProperty(propAdminTabMainPath)) &&
@@ -118,6 +122,7 @@ public class SetupApproverTests extends PublicAdminTestBase {
                        !presentByXpath(getProperty(propAdminTabUsersPath)) &&
                        !presentByXpath(getProperty(propAdminTabSystemPath)));
 
+    logout();
   }
 
 }

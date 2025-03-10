@@ -41,7 +41,7 @@ public class AddPublicSubTests extends PersonalTestBase {
                          "//table[@class='withNotices']/tbody/tr/" +
                                  "td[@id='bodyContent']/h2"),
                  getProperty(propUserManageCalTitle));
-    info("On " + getProperty(propUserManageCalTitle)
+    msg("On " + getProperty(propUserManageCalTitle)
                  + " page.");
 
     // Ensure no previous subscription
@@ -53,7 +53,7 @@ public class AddPublicSubTests extends PersonalTestBase {
             "li[@class='alias']/" +
             "a[contains(text(), '" + topicalAreaName + "')]";
     if (presentByXpath(navXpath)) {
-      info("Delete already existing subscription");
+      msg("Delete already existing subscription");
 
       clickByXpath("//a[@class='calManageLink']");
       clickByXpath(subXpath);
@@ -62,7 +62,7 @@ public class AddPublicSubTests extends PersonalTestBase {
       clickByXpath("//input[@value='Yes: Delete Calendar!']");
     }
 
-    info("About to subscribe to " + topicalAreaName);
+    msg("About to subscribe to " + topicalAreaName);
     // click the add subscription button
     clickById("addSubButton");
 
@@ -82,14 +82,14 @@ public class AddPublicSubTests extends PersonalTestBase {
     // add the subscription
     clickById("intSubSubmit");
 
-    info("Public subscription added: about to test for, and click, link.");
+    msg("Public subscription added: about to test for, and click, link.");
 
     // *****************************************************************
     // Now check the subscription is there in the normal calendar listing
     // and select it
     clickByXpath(navXpath);
 
-    info("Public subscription added.");
+    msg("Public subscription added.");
 
     // See if any events we added are visible
 

@@ -61,7 +61,8 @@ public class SimpleSubmitEventTests extends SubmissionTestBase {
 
     // ================ Check pending queue and claim it
     adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw));
+               getProperty(propApproverUserPw),
+               "check pending queue");
 
     tabPendingQueue();
 

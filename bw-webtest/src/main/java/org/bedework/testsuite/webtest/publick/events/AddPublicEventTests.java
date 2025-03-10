@@ -52,7 +52,8 @@ public class AddPublicEventTests extends PublicAdminTestBase {
                     " CreatePubEventsTest - " + uuid;
 
     adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw));
+               getProperty(propApproverUserPw),
+               "add public event");
 
     // get to the Add Event page
     startAddEvent(eventTitle,
@@ -121,7 +122,8 @@ public class AddPublicEventTests extends PublicAdminTestBase {
 
     // Now remove the event
     adminLogin(getProperty(propAdminSuperUser),
-               getProperty(propAdminSuperUserPw));
+               getProperty(propAdminSuperUserPw),
+               "remove the public event");
     manageEventsPage();
     clickByXpath(
             "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +

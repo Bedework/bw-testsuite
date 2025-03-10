@@ -36,7 +36,8 @@ public class WorkflowTests extends PublicAdminTestBase {
                     " CreatePubEventsTest - " + uuid;
 
     adminLogin(getProperty(propNonApproverUser),
-               getProperty(propNonApproverUserPw));
+               getProperty(propNonApproverUserPw),
+               "Non -approver add event");
 
     startAddEvent(eventTitle,
                   "bedework public event test description", "FREE",
@@ -48,7 +49,8 @@ public class WorkflowTests extends PublicAdminTestBase {
 
     // The event should show up in the approval queue for the approver
     adminLogin(getProperty(propApproverUser2Groups),
-               getProperty(propApproverUser2GroupsPw));
+               getProperty(propApproverUser2GroupsPw),
+               "approve event");
 
     // Select group
 
