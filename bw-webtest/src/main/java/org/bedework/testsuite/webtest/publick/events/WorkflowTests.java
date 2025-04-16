@@ -40,7 +40,7 @@ public class WorkflowTests extends PublicAdminTestBase {
                "Non -approver add event");
 
     startAddEvent(eventTitle,
-                  "bedework public event test description", "FREE",
+                  "bedework public event approval test description", "FREE",
                   getProperty(propAdminEventLink),
                   null, null);
     clickAddEventNoErrors();

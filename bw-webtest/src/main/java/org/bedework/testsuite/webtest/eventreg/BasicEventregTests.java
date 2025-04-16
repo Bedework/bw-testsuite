@@ -132,6 +132,10 @@ public class BasicEventregTests extends EventregBase {
             findByName("delete").click();
             // Confirm
             findByName("delete").click();
+            assertThat("Must have 'deleted' message",
+                       findById("messages").getText(),
+                       containsString("deleted"));
+
             found = true;
             break;
           }

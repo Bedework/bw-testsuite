@@ -351,6 +351,10 @@ public class PublicAdminTestBase extends TestBase {
   public void clickAddEventNoErrors() {
     clickAddEvent();
 
+    // Expect a messages id with "added" in text
+    assertThat("Must have 'added' message",
+               findById("messages").getText(),
+               containsString("added"));
     if (presentById("errors")) {
       fail("Errors on event add: " +
                    findById("errors").getText());
