@@ -190,7 +190,7 @@ public class PublicAdminTestBase extends TestBase {
 
     assertEquals(getTextByTag("h2"),
                  getProperty(propAdminEventInfoTitle));
-    System.out.println("On " + getProperty(propAdminEventInfoTitle) + " page.");
+    msg("On " + getProperty(propAdminEventInfoTitle) + " page.");
   }
 
   public void eventsListPage() {
@@ -198,9 +198,8 @@ public class PublicAdminTestBase extends TestBase {
 
     assertEquals(getTextByTag("h2"),
                  getProperty(propAdminManageEventsTitle));
-    System.out.println(
-            "On " + getProperty(propAdminManageEventsTitle) +
-                    " page.");
+    msg("On " + getProperty(propAdminManageEventsTitle) +
+                " page.");
   }
 
   public void adminGroupListPage() {
@@ -246,6 +245,27 @@ public class PublicAdminTestBase extends TestBase {
   public void addUserMemberIfNeeded(final String member) {
     if (!tableHasElementText("memberAccountList", member)) {
       setTextById("agMember", member);
+      clickById("agUser");
+      clickByName("addGroupMember");
+    }
+  }
+
+  public void addGroupToGroup(final String member,
+                             final String groupName) {
+    msg("Revisit admin group list page");
+    adminGroupListPage();
+
+    // Assuming group exists for the moment
+    assertThat("Admin group " + groupName + " must exist",
+               adminGroupManageMembersPage(groupName));
+    addGroupMemberIfNeeded(member);
+  }
+
+  // Positioned by call to adminGroupPage()
+  public void addGroupMemberIfNeeded(final String member) {
+    if (!tableHasElementText("memberAccountList", member)) {
+      setTextById("agMember", member);
+      clickById("agGroup");
       clickByName("addGroupMember");
     }
   }

@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -60,6 +62,9 @@ public class AddPublicSubTests extends PersonalTestBase {
       clickByXpath("//form[@id='modCalForm']//" +
                            "input[@value='Delete Subscription']");
       clickByXpath("//input[@value='Yes: Delete Calendar!']");
+      assertThat("Must have 'deleted' message",
+                 findById("messages").getText(),
+                 containsString("deleted"));
     }
 
     msg("About to subscribe to " + topicalAreaName);

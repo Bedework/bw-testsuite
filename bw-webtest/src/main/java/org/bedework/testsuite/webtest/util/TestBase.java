@@ -38,6 +38,8 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -287,8 +289,8 @@ public class TestBase {
 
     // ****************************************
     // Now test the event in the public client.
-    System.out.println("Event is published. " +
-                               "Now checking event in public web client.");
+    msg("Event is published. " +
+                "Now checking event in public web client.");
 
     getPublicPage(getProperty(propPublicHome));
 
@@ -298,10 +300,10 @@ public class TestBase {
             "//div[@id='listEvents']//div[@class='bwSummary']/a[contains(text(),'" +
                     uuid + "')]");
 
-    System.out.println("Event \"" + uuid + "\" found.");
+    msg("Event \"" + uuid + "\" found.");
 
     final var actual = findByXpath("//div[@class='eventWhen']//span[@class='time']").getText();
-    System.out.println(format("Actual time is \"%s\" required \"%s\"", actual, time));
+    msg(format("Actual time is \"%s\" required \"%s\"", actual, time));
 
     assertThat("Time should be at \"" +
                        time +
@@ -484,11 +486,14 @@ public class TestBase {
     };
   }
 
+  final static DateTimeFormatter fmt =
+          DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
   protected void msg(final String msg) {
-    System.out.println(msg);
+    System.out.println(LocalDateTime.now().format(fmt) + ": " + msg);
   }
 
   protected void msg(final String msg, final String... msgPars) {
-    System.out.printf(msg, msgPars);
+    System.out.printf(LocalDateTime.now().format(fmt) + ": " + msg, msgPars);
   }
 }

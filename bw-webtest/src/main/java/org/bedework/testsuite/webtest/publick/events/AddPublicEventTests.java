@@ -27,6 +27,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * @author johnsa
  *
@@ -130,5 +133,8 @@ public class AddPublicEventTests extends PublicAdminTestBase {
                     uuid + "')]");
     clickByXpath("//input[@value='Delete Event']");
     clickByXpath("//input[@value='Yes: Delete Event']");
+    assertThat("Must have 'deleted' message",
+               findById("messages").getText(),
+               containsString("deleted"));
   }
 }

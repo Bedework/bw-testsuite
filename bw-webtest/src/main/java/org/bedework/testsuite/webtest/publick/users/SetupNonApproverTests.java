@@ -54,26 +54,20 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
     }
 
     // Ensure in main group -
-    msg("Revisit admin group list page");
-    adminGroupListPage();
-
-    final var parentGroupName = getProperty(propNonApproverGroupParentName);
-
-    msg("Ensure parent page exists");
-    assertThat("Admin group " + parentGroupName + " must exist",
-               adminGroupManageMembersPage(parentGroupName));
-    // Need to flag as group
-    setRadioByIdIfNeeded("agGroup", true);
-    addUserMemberIfNeeded(groupName);
 
     msg("Add non-approver group to parent group");
-    addUserToGroup(groupName,
-                   getProperty(propApproverUserGroupName));
+    addGroupToGroup(groupName,
+                   getProperty(propNonApproverGroupParentName));
+
+    final var nonApproverUser =
+            getProperty(propNonApproverUser);
+
+    msg("Add non-approver user to non-approver group");
+    addUserToGroup(nonApproverUser, groupName);
 
     msg("Logging out from non-approver setup");
     logout();
 
-    final var nonApproverUser = getProperty(propNonApproverUser);
     msg("Try login as non-approver %s\n",
         nonApproverUser);
 
