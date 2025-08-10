@@ -302,7 +302,11 @@ public class TestBase {
 
     msg("Event \"" + uuid + "\" found.");
 
-    final var actual = findByXpath("//div[@class='eventWhen']//span[@class='time']").getText();
+    final var actual = findByXpath("//div[@class='eventWhen']//span[@class='time']")
+            .getText()
+            .replaceAll("\\u202F", " ");
+    // May need to replace other localization characters.
+
     msg(format("Actual time is \"%s\" required \"%s\"", actual, time));
 
     assertThat("Time should be at \"" +
