@@ -1,0 +1,24 @@
+= Proposed tests for bedework
+
+== Non-approvers
+Should only be able to change event status::
+. Either from search page or display via search
+. No link to edit.
+. Block in app
+
+Should only be able to search their own group::
+. no search radio to (un)limit group search.
+. Block action in app.
+
+Should not be able to delete::
+. Ensure no delete url.
+. Block action in app.
+
+Approval queue::
+. user should only see events in one's own group.
+
+== Superuser
+Need date picker and filters::
+
+== Modify Admins
+. Filter by role
