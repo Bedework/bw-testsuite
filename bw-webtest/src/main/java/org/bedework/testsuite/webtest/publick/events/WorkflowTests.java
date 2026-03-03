@@ -6,6 +6,7 @@ package org.bedework.testsuite.webtest.publick.events;
 import org.bedework.testsuite.webtest.publick.PublicAdminTestBase;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -30,18 +31,16 @@ public class WorkflowTests extends PublicAdminTestBase {
   @Test
   @DisplayName("Public events: Add an event and have it approved")
   public void testApproval() {
-    final String uuid = UUID.randomUUID().toString();
-    final String eventTitle =
-            getProperty("publicEventTitlePrefix") +
-                    " CreatePubEventsTest - " + uuid;
+    setProperty("uuid", UUID.randomUUID().toString());
 
     adminLogin(getProperty(propNonApproverUser),
                getProperty(propNonApproverUserPw),
                "Non -approver add event");
 
-    startAddEvent(eventTitle,
-                  "bedework public event approval test description", "FREE",
-                  getProperty(propAdminEventLink),
+    startAddEvent(getProperty("publicEventTitle"),
+                  getProperty("publicEventApprovalDescription"),
+                  "FREE",
+                  getProperty("adminEventLink"),
                   null, null);
     clickAddEventNoErrors();
 
@@ -54,17 +53,17 @@ public class WorkflowTests extends PublicAdminTestBase {
 
     // Select group
 
-    getAdminPageByHrefSeg(getProperty(propNonApproverUserGroupName));
+    getAdminPageByHrefSeg(getProperty("nonApproverUserGroupName"));
 
     tabApproverQueue();
 
     // Need to get event uid from link showing the summary
 
-    final var elementOnAppprovalQ = findByXpathStr(
-            "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
-                    uuid + "')]");
+    final var elementOnAppprovalQ =
+        findByXpath("adminEventByUUID");
 
-    final var href = elementOnAppprovalQ.getAttribute("href");
+    final var href = elementOnAppprovalQ.getDomAttribute("href");
+    Assertions.assertNotNull(href);
     final var guidStart = href.indexOf("guid=") + 5;
     final var guid = href.substring(guidStart,
                                     href.indexOf('&', guidStart + 1));
@@ -78,10 +77,9 @@ public class WorkflowTests extends PublicAdminTestBase {
     tabMainMenu();
     manageEventsPage();
 
-    final var elementOnManageEvents = findByXpathStr(
-            "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
-                    uuid + "')]");
+    final var elementOnManageEvents =
+        findByXpath("adminEventByUUID");
 
-    checkPublicPageForEvent(uuid, "2:00 PM");
+    checkPublicPageForEvent("2:00 PM");
   }
 }

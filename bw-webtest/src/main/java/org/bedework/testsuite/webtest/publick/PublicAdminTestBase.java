@@ -17,10 +17,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  * User: mike Date: 8/6/24 Time: 23:40
  */
 public class PublicAdminTestBase extends TestBase {
-  public static final String propAdminHome = "adminHome";
-
-  public static final String propAdminFooter = "adminFooter";
-
   public static final String propAdminSuperUser = "adminSuperUser";
   public static final String propAdminSuperUserPw = "adminSuperUserPw";
 
@@ -101,20 +97,22 @@ public class PublicAdminTestBase extends TestBase {
   public void adminLogin(final String user,
                          final String password,
                          final String purpose) {
-    msg("About to log in to admin client for %s\n", purpose);
+    setProperty("user", user);
+    setProperty("loginPurpose", purpose);
+    msg("msgAdminLoginPurpose");
+
     final var driver = getWebDriver();
 
-    driver.get(getProperty(propAdminHome));
+    driver.get(getProperty("adminHome"));
 
     // Log in to the client
     final var element = sendLoginGetFooter(user, password);
 
     assertEquals(element.getText(),
-                 getProperty(propAdminFooter));
+                 getProperty("adminFooter"));
 
     // Output the footer text:
-    msgStr("Logged into admin client as user \"" +
-                 user + "\"");
+    msgStr("msgAdminLoggedIn");
   }
 
   public void startAddEvent(final String summary,
@@ -162,7 +160,7 @@ public class PublicAdminTestBase extends TestBase {
     final var e = findById("footer");
     assertThat("Footer must contain correct text: ",
                e.getText(),
-               containsString(getProperty(propAdminFooter)));
+               containsString(getProperty("adminFooter")));
   }
 
   public void getAdminPageByHref(final String href) {

@@ -247,27 +247,22 @@ public class TestBase {
     return checkbox.isSelected();
   }
 
-  public void checkPublicPageForEvent(final String uuid,
-                                      final String time) {
-
+  public void checkPublicPageForEvent(final String time) {
     // ****************************************
     // Now test the event in the public client.
-    msgStr("Event is published. " +
-                "Now checking event in public web client.");
+    msg("msgeventPublishedCheckingPublic");
 
     getPublicPage(getProperty(propPublicHome));
 
     // The event should exist today.  It should be on the current page.
     // The following will fail if not found:
-    getPublicPageByXpath(
-            "//div[@id='listEvents']//div[@class='bwSummary']/a[contains(text(),'" +
-                    uuid + "')]");
+    getPublicPageByXpath(getProperty("publicEventByUUID"));
 
-    msgStr("Event \"" + uuid + "\" found.");
+    msg("msgEventFound");
 
-    final var actual = findByXpathStr("//div[@class='eventWhen']//span[@class='time']")
-            .getText()
-            .replaceAll("\\u202F", " ");
+    final var actual = findByXpath("publicEventTime")
+        .getText()
+        .replaceAll("\\u202F", " ");
     // May need to replace other localization characters.
 
     msgStr(format("Actual time is \"%s\" required \"%s\"", actual, time));

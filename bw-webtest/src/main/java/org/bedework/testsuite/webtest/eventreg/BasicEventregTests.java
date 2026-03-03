@@ -85,7 +85,7 @@ public class BasicEventregTests extends EventregBase {
 
     // Now locate the event in the public client
 
-    checkPublicPageForEvent(uuid, "2:00 PM");
+    checkPublicPageForEvent("2:00 PM");
 
     // Look for the registration fields
 

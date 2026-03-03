@@ -49,18 +49,15 @@ public class AddPublicEventTests extends PublicAdminTestBase {
   @Test
   @DisplayName("Public events: Add an event")
   public void testProcess() {
-    final String uuid = UUID.randomUUID().toString();
-    final String eventTitle =
-            getProperty("publicEventTitlePrefix") +
-                    " CreatePubEventsTest - " + uuid;
+    setProperty("uuid", UUID.randomUUID().toString());
 
     adminLogin(getProperty(propApproverUser),
                getProperty(propApproverUserPw),
                "add public event");
 
     // get to the Add Event page
-    startAddEvent(eventTitle,
-                  "selenium test description");
+    startAddEvent(getProperty("publicEventTitle"),
+                  getProperty("publicEventAddDescription"));
 
     // test basic validation without filling in the form
     clickAddEvent();
@@ -101,7 +98,7 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     // set the cost and link
     setTextByName("eventCost", "FREE");
     setTextByName("eventLink",
-                  getProperty(propAdminEventLink));
+                  getProperty("adminEventLink"));
 
     // image and thumbnail URLs
     // we'll check image uploads in update event test, because we need to also test image removal
@@ -116,25 +113,21 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     /* The event should show up in the manage events list. */
     manageEventsPage();
 
-    findByXpathStr(
-            "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
-                    uuid + "')]");
+    findByXpath("adminEventByUUID");
     logout();
 
-    checkPublicPageForEvent(uuid, "2:00 PM");
+    checkPublicPageForEvent("2:00 PM");
 
     // Now remove the event
     adminLogin(getProperty(propAdminSuperUser),
                getProperty(propAdminSuperUserPw),
                "remove the public event");
     manageEventsPage();
-    clickByXpathStr(
-            "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
-                    uuid + "')]");
-    clickByXpathStr("//input[@value='Delete Event']");
-    clickByXpathStr("//input[@value='Yes: Delete Event']");
+    clickByXpath("adminEventByUUID");
+    clickByXpath("adminDeleteEventLink");
+    clickByXpath("adminDeleteEventConfirm");
     assertThat("Must have 'deleted' message",
                findById("messages").getText(),
-               containsString("deleted"));
+               containsString(getProperty("adminDeletedEventText")));
   }
 }
