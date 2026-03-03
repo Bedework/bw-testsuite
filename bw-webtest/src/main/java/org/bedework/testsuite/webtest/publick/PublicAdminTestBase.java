@@ -3,7 +3,7 @@
 */
 package org.bedework.testsuite.webtest.publick;
 
-import org.bedework.testsuite.webtest.util.TestBase;
+import org.bedework.testsuite.webtest.TestBase;
 
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.Select;
@@ -78,8 +78,10 @@ public class PublicAdminTestBase extends TestBase {
           "adminEventLink";
 
   // Tab paths
-  public static final String propAdminTabMainPath =
-          "adminTabMainPath";
+  public static final String propAdminTabHomePath =
+          "adminTabHomePath";
+  public static final String propAdminTabAddEventPath =
+          "adminTabAddEventPath";
   public static final String propAdminTabApprovalqPath =
           "adminTabApprovalqPath";
   public static final String propAdminTabSuggestionqPath =
@@ -111,7 +113,7 @@ public class PublicAdminTestBase extends TestBase {
                  getProperty(propAdminFooter));
 
     // Output the footer text:
-    msg("Logged into admin client as user \"" +
+    msgStr("Logged into admin client as user \"" +
                  user + "\"");
   }
 
@@ -169,12 +171,12 @@ public class PublicAdminTestBase extends TestBase {
   }
 
   public void getAdminPageByXpath(final String xpath) {
-    findByXpath(xpath).click();
+    findByXpathStr(xpath).click();
     checkPage();
   }
 
   public void getAdminPageByHrefSeg(final String hrefseg) {
-    findByXpath("//a[contains(@href,'" +
+    findByXpathStr("//a[contains(@href,'" +
                         hrefseg +
                         "')]").click();
     checkPage();
@@ -190,7 +192,7 @@ public class PublicAdminTestBase extends TestBase {
 
     assertEquals(getTextByTag("h2"),
                  getProperty(propAdminEventInfoTitle));
-    msg("On " + getProperty(propAdminEventInfoTitle) + " page.");
+    msgStr("On " + getProperty(propAdminEventInfoTitle) + " page.");
   }
 
   public void eventsListPage() {
@@ -198,7 +200,7 @@ public class PublicAdminTestBase extends TestBase {
 
     assertEquals(getTextByTag("h2"),
                  getProperty(propAdminManageEventsTitle));
-    msg("On " + getProperty(propAdminManageEventsTitle) +
+    msgStr("On " + getProperty(propAdminManageEventsTitle) +
                 " page.");
   }
 
@@ -208,7 +210,7 @@ public class PublicAdminTestBase extends TestBase {
   }
 
   public void tabMainMenu() {
-    getAdminPageByXpath(getProperty(propAdminTabMainPath));
+    getAdminPageByXpath(getProperty(propAdminTabHomePath));
   }
 
   public void tabApproverQueue() {
@@ -252,7 +254,7 @@ public class PublicAdminTestBase extends TestBase {
 
   public void addGroupToGroup(final String member,
                              final String groupName) {
-    msg("Revisit admin group list page");
+    msgStr("Revisit admin group list page");
     adminGroupListPage();
 
     // Assuming group exists for the moment
@@ -289,11 +291,11 @@ public class PublicAdminTestBase extends TestBase {
   }
 
   public void setTopicalArea(final String pathPropName) {
-    findByXpath(getProperty(pathPropName)).click();
+    findByXpathStr(getProperty(pathPropName)).click();
   }
 
   public void setDefaultTopicalArea() {
-    findByXpath(getProperty(propAdminEventTopicalArea1Xpath)).click();
+    findByXpathStr(getProperty(propAdminEventTopicalArea1Xpath)).click();
   }
 
   public void setALocation() {
@@ -306,7 +308,7 @@ public class PublicAdminTestBase extends TestBase {
 
     // Set text in search box
     setTextById("bwLocationSearch", "loc");
-    final var selectedLoc = findByXpath(
+    final var selectedLoc = findByXpathStr(
             "//div[@id=\"bwLocationSearchResults\"]/ul/li[1]");
     selectedLoc.click();
   }
@@ -321,7 +323,7 @@ public class PublicAdminTestBase extends TestBase {
 
     // Set text in search box
     setTextById("bwContactSearch", "co");
-    final var selectedContact = findByXpath(
+    final var selectedContact = findByXpathStr(
             "//div[@id=\"bwContactSearchResults\"]/ul/li[1]");
     selectedContact.click();
   }
@@ -350,7 +352,7 @@ public class PublicAdminTestBase extends TestBase {
   }
 
   public void clickAdminInputButton(final String locationSeg) {
-    findByXpath("//input[@type='button' and " +
+    findByXpathStr("//input[@type='button' and " +
                         "contains(@onclick, '" +
                         locationSeg + "')]").click();
   }
@@ -363,7 +365,7 @@ public class PublicAdminTestBase extends TestBase {
     } else {
       valuePart = "and contains(text(), '" + value[0] + "')";
     }
-    findByXpath("//button[contains(@onclick, '" +
+    findByXpathStr("//button[contains(@onclick, '" +
                         locationSeg + "')" +
                         valuePart + "]").click();
   }

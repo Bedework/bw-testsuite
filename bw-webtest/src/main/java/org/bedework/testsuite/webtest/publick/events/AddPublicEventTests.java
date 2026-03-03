@@ -51,7 +51,7 @@ public class AddPublicEventTests extends PublicAdminTestBase {
   public void testProcess() {
     final String uuid = UUID.randomUUID().toString();
     final String eventTitle =
-            getProperty(propPublicEventTitlePrefix) +
+            getProperty("publicEventTitlePrefix") +
                     " CreatePubEventsTest - " + uuid;
 
     adminLogin(getProperty(propApproverUser),
@@ -106,9 +106,9 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     // image and thumbnail URLs
     // we'll check image uploads in update event test, because we need to also test image removal
     setTextByName("xBwImageHolder",
-                  getProperty(propBedeworkLogo));
+                  getProperty("bedeworkLogo"));
     setTextByName("xBwImageThumbHolder",
-                  getProperty(propBedeworkLogoThumb));
+                  getProperty("bedeworkLogoThumb"));
 
     // submit the event
     clickAddEventNoErrors();
@@ -116,7 +116,7 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     /* The event should show up in the manage events list. */
     manageEventsPage();
 
-    findByXpath(
+    findByXpathStr(
             "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
                     uuid + "')]");
     logout();
@@ -128,11 +128,11 @@ public class AddPublicEventTests extends PublicAdminTestBase {
                getProperty(propAdminSuperUserPw),
                "remove the public event");
     manageEventsPage();
-    clickByXpath(
+    clickByXpathStr(
             "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
                     uuid + "')]");
-    clickByXpath("//input[@value='Delete Event']");
-    clickByXpath("//input[@value='Yes: Delete Event']");
+    clickByXpathStr("//input[@value='Delete Event']");
+    clickByXpathStr("//input[@value='Yes: Delete Event']");
     assertThat("Must have 'deleted' message",
                findById("messages").getText(),
                containsString("deleted"));

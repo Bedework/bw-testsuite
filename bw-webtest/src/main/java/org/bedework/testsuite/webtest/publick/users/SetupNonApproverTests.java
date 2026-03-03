@@ -27,7 +27,7 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
                getProperty(propAdminSuperUserPw),
                "set up non-approver user");
 
-    msg("Visit admin user roles page");
+    msgStr("Visit admin user roles page");
     userRolesPage();
 
     // In general, we may have to add the user to the page by setting a role
@@ -37,12 +37,12 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
     }
 
     // Ensure in non-approver group.
-    msg("Visit admin group list page");
+    msgStr("Visit admin group list page");
     adminGroupListPage();
 
     final var groupName = getProperty(propNonApproverUserGroupName);
     if (!adminGroupManageMembersPage(groupName)) {
-      msg("Create admin group");
+      msgStr("Create admin group");
       // Create group
       clickAdminInputButton("admingroup/initAdd.do");
 
@@ -55,17 +55,17 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
 
     // Ensure in main group -
 
-    msg("Add non-approver group to parent group");
+    msgStr("Add non-approver group to parent group");
     addGroupToGroup(groupName,
                    getProperty(propNonApproverGroupParentName));
 
     final var nonApproverUser =
             getProperty(propNonApproverUser);
 
-    msg("Add non-approver user to non-approver group");
+    msgStr("Add non-approver user to non-approver group");
     addUserToGroup(nonApproverUser, groupName);
 
-    msg("Logging out from non-approver setup");
+    msgStr("Logging out from non-approver setup");
     logout();
 
     msg("Try login as non-approver %s\n",
@@ -77,13 +77,14 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
                "check non-approver tabs");
 
     assertThat("Should see main and approval q tabs only",
-               presentByXpath(getProperty(propAdminTabMainPath)) &&
-                       presentByXpath(getProperty(propAdminTabApprovalqPath)) &&
-                       !presentByXpath(getProperty(propAdminTabSuggestionqPath)) &&
-                       !presentByXpath(getProperty(propAdminTabPendingqPath)) &&
-                       !presentByXpath(getProperty(propAdminTabCalendarSuitePath)) &&
-                       !presentByXpath(getProperty(propAdminTabUsersPath)) &&
-                       !presentByXpath(getProperty(propAdminTabSystemPath)));
+               presentByXpathStr(
+                       getProperty(propAdminTabHomePath)) &&
+                       presentByXpathStr(getProperty(propAdminTabApprovalqPath)) &&
+                       !presentByXpathStr(getProperty(propAdminTabSuggestionqPath)) &&
+                       !presentByXpathStr(getProperty(propAdminTabPendingqPath)) &&
+                       !presentByXpathStr(getProperty(propAdminTabCalendarSuitePath)) &&
+                       !presentByXpathStr(getProperty(propAdminTabUsersPath)) &&
+                       !presentByXpathStr(getProperty(propAdminTabSystemPath)));
 
     logout();
   }

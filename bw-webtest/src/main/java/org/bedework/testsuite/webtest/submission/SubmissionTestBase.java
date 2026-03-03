@@ -46,7 +46,7 @@ public class SubmissionTestBase extends PublicAdminTestBase {
                  getProperty(propSubmissionsFooter));
 
     // Output the footer text:
-    msg("Logged into submissions client as user \"" +
+    msgStr("Logged into submissions client as user \"" +
                  user + "\"");
   }
 

@@ -16,9 +16,7 @@
     specific language governing permissions and limitations
     under the License.
  */
-package org.bedework.testsuite.webtest.util;
-
-import org.bedework.util.misc.Util;
+package org.bedework.testsuite.webtest;
 
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.property.DtStart;
@@ -35,14 +33,10 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -66,14 +60,11 @@ public class TestBase {
   private WebDriver driver;
   private Actions actions;
 
-  private static Properties props;
-  private static Util.PropertyFetcher pfetcher;
+  private static final ThreadLocal<TestProperties> props =
+      new ThreadLocal<>();
   private static final Object lock = new Object();
 
   protected static boolean isMac = SystemUtils.IS_OS_MAC;
-
-  public static final String overridePropfileSysProperty =
-          "org.bedework.testsuite.webtest.overrides";
 
   // Property names
   /** Driver type */
@@ -90,12 +81,6 @@ public class TestBase {
   public static final String propPublicHost = "publicHost";
   public static final String propPublicHome = "publicHome";
   public static final String propPublicFooter = "publicFooter";
-
-  public static final String propPublicEventTitlePrefix =
-          "publicEventTitlePrefix";
-
-  public static final String propSubTopicalArea1Name =
-          "subTopicalArea1Name";
 
   public String getDateAfter(final String duration) {
     final var dur = new Dur(duration);
@@ -130,45 +115,23 @@ public class TestBase {
     }
   }
 
-  public String getProperty(final String name) {
-    if (props == null) {
+  public TestProperties getProperties() {
+    if (props.get() == null) {
       synchronized (lock) {
-        if (props == null) {
-          final var newProps = new Properties();
-          try (final InputStream stream =
-            getClass().getResourceAsStream("/webtest.properties")) {
-            newProps.load(stream);
-          } catch (final IOException e) {
-            throw new RuntimeException(e);
-          }
-
-          final var overrides =
-                  System.getProperty(overridePropfileSysProperty);
-
-          if (overrides == null) {
-            props = newProps;
-          } else {
-            final var overrideProps = new Properties(newProps);
-
-            try (final InputStream stream =
-                         new FileInputStream(overrides)) {
-              overrideProps.load(stream);
-            } catch (final IOException e) {
-              throw new RuntimeException(e);
-            }
-
-            props = overrideProps;
-          }
-
-          // Use Util.propertyReplace to allow property
-          // references in the file(s).
-          pfetcher = new Util.PropertiesPropertyFetcher(props);
-        }
+        props.set(new TestProperties());
       }
     }
 
-    return Util.propertyReplace(props.getProperty(name),
-                                pfetcher);
+    return props.get();
+  }
+
+  public String getProperty(final String name) {
+    return getProperties().getProperty(name);
+  }
+
+  public void setProperty(final String name,
+                          final String value) {
+    props.get().setProperty(name, value);
   }
 
   /** Type to be used for tests
@@ -289,7 +252,7 @@ public class TestBase {
 
     // ****************************************
     // Now test the event in the public client.
-    msg("Event is published. " +
+    msgStr("Event is published. " +
                 "Now checking event in public web client.");
 
     getPublicPage(getProperty(propPublicHome));
@@ -300,14 +263,14 @@ public class TestBase {
             "//div[@id='listEvents']//div[@class='bwSummary']/a[contains(text(),'" +
                     uuid + "')]");
 
-    msg("Event \"" + uuid + "\" found.");
+    msgStr("Event \"" + uuid + "\" found.");
 
-    final var actual = findByXpath("//div[@class='eventWhen']//span[@class='time']")
+    final var actual = findByXpathStr("//div[@class='eventWhen']//span[@class='time']")
             .getText()
             .replaceAll("\\u202F", " ");
     // May need to replace other localization characters.
 
-    msg(format("Actual time is \"%s\" required \"%s\"", actual, time));
+    msgStr(format("Actual time is \"%s\" required \"%s\"", actual, time));
 
     assertThat("Time should be at \"" +
                        time +
@@ -368,8 +331,12 @@ public class TestBase {
     }
   }
 
-  public void clickByXpath(final String path) {
-    findByXpath(path).click();
+  public void clickByXpathStr(final String path) {
+    findByXpathStr(path).click();
+  }
+
+  public void clickByXpath(final String pathProp) {
+    findByXpathStr(getProperty(pathProp)).click();
   }
 
   public void errorMustContain(final String reason,
@@ -399,7 +366,11 @@ public class TestBase {
     return getWebDriver().findElement(By.tagName(val));
   }
 
-  public WebElement findByXpath(final String path) {
+  public WebElement findByXpath(final String pathProp) {
+    return getWebDriver().findElement(By.xpath(getProperty(pathProp)));
+  }
+
+  public WebElement findByXpathStr(final String path) {
     return getWebDriver().findElement(By.xpath(path));
   }
 
@@ -416,8 +387,8 @@ public class TestBase {
     return findByTag(tag).getText();
   }
 
-  public String getTextByXpath(final String path) {
-    return findByXpath(path).getText();
+  public String getTextByXpath(final String pathProp) {
+    return findByXpathStr(getProperty(pathProp)).getText();
   }
 
   public boolean presentById(final String id) {
@@ -429,7 +400,16 @@ public class TestBase {
     }
   }
 
-  public boolean presentByXpath(final String path) {
+  public boolean presentByXpath(final String pathProp) {
+    try {
+      getWebDriver().findElement(By.xpath(getProperty(pathProp)));
+      return true;
+    } catch (final NoSuchElementException ignored) {
+      return false;
+    }
+  }
+
+  public boolean presentByXpathStr(final String path) {
     try {
       getWebDriver().findElement(By.xpath(path));
       return true;
@@ -468,7 +448,7 @@ public class TestBase {
   }
 
   public void getPublicPageByXpath(final String xpath) {
-    findByXpath(xpath).click();
+    findByXpathStr(xpath).click();
     checkPublicPage();
   }
 
@@ -493,7 +473,12 @@ public class TestBase {
   final static DateTimeFormatter fmt =
           DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
-  protected void msg(final String msg) {
+  protected void msg(final String msgProp) {
+    System.out.println(LocalDateTime.now().format(fmt) + ": " +
+                               getProperty(msgProp));
+  }
+
+  protected void msgStr(final String msg) {
     System.out.println(LocalDateTime.now().format(fmt) + ": " + msg);
   }
 

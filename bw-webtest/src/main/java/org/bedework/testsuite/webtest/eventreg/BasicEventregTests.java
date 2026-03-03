@@ -95,7 +95,7 @@ public class BasicEventregTests extends EventregBase {
     //switch To IFrame using Web Element
     toIframe("evregIframe");
 
-    msg("Log in to register for event as " +
+    msgStr("Log in to register for event as " +
                 getProperty(propEventregUser));
     sendLogin(getProperty(propEventregUser),
               getProperty(propEventregPw));
@@ -105,7 +105,7 @@ public class BasicEventregTests extends EventregBase {
                findByTag("p").getText(),
                containsString("Thank you! Your request for"));
 
-    msg("Successsfully registered for event " + uuid);
+    msgStr("Successsfully registered for event " + uuid);
     findByAttribute("href='logout.do'").click();
     toDefault();
   }
@@ -128,7 +128,7 @@ public class BasicEventregTests extends EventregBase {
         found = false;
         final var tbody = findById("commonListTableBody");
         for (final var link: tbody.findElements(By.tagName("a"))) {
-          msg("Found link: " + link.getText());
+          msgStr("Found link: " + link.getText());
           if (link.getText().contains(
                   getProperty(propEventregTitlePrefix))) {
             link.click();

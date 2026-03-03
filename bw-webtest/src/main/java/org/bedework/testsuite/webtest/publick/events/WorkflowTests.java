@@ -32,7 +32,7 @@ public class WorkflowTests extends PublicAdminTestBase {
   public void testApproval() {
     final String uuid = UUID.randomUUID().toString();
     final String eventTitle =
-            getProperty(propPublicEventTitlePrefix) +
+            getProperty("publicEventTitlePrefix") +
                     " CreatePubEventsTest - " + uuid;
 
     adminLogin(getProperty(propNonApproverUser),
@@ -60,7 +60,7 @@ public class WorkflowTests extends PublicAdminTestBase {
 
     // Need to get event uid from link showing the summary
 
-    final var elementOnAppprovalQ = findByXpath(
+    final var elementOnAppprovalQ = findByXpathStr(
             "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
                     uuid + "')]");
 
@@ -78,7 +78,7 @@ public class WorkflowTests extends PublicAdminTestBase {
     tabMainMenu();
     manageEventsPage();
 
-    final var elementOnManageEvents = findByXpath(
+    final var elementOnManageEvents = findByXpathStr(
             "//table[@id='commonListTable']/tbody/tr/td/a[contains(text(),'" +
                     uuid + "')]");
 

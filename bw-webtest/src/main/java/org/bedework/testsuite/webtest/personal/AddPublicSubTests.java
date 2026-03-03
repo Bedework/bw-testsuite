@@ -33,83 +33,68 @@ public class AddPublicSubTests extends PersonalTestBase {
     final String subFinder = "-" +
             UUID.randomUUID().toString().substring(0, 4);
 
-    personalLogin(getProperty(propPersonalUser),
-          getProperty(propPersonalPw));
+    personalLogin(propPersonalUser, propPersonalPw);
 
     // get to the manage calendars page
-    clickByXpath("//a[@class='calManageLink']");
+    clickByXpath("personalManageCalendarsLink");
 
-    assertEquals(getTextByXpath(
-                         "//table[@class='withNotices']/tbody/tr/" +
-                                 "td[@id='bodyContent']/h2"),
-                 getProperty(propUserManageCalTitle));
-    msg("On " + getProperty(propUserManageCalTitle)
-                 + " page.");
+    assertEquals(
+            getTextByXpath(
+                    "personalManageCalendarsValidationPath"),
+                 getProperty("personalManageCalendarsValidationValue"));
+    msg("msgPersonalOnManageCalPage");
 
     // Ensure no previous subscription
-    final var topicalAreaName = getProperty(propSubTopicalArea1Name);
-    final var navXpath = "//td[@id='sideBar']/ul[@class='calendarTree']//" +
-            "li[@class='alias']/" +
-            "a[contains(text(), '" + topicalAreaName + "')]";
-    final var subXpath = "//table[@id='calendarTable']//ul[@class='calendarTree']//" +
-            "li[@class='alias']/" +
-            "a[contains(text(), '" + topicalAreaName + "')]";
-    if (presentByXpath(navXpath)) {
-      msg("Delete already existing subscription");
+    if (presentByXpath("personalNavXpathSubmissionConcerts")) {
+      msg("msgDeleteExistingSubscription");
 
-      clickByXpath("//a[@class='calManageLink']");
-      clickByXpath(subXpath);
-      clickByXpath("//form[@id='modCalForm']//" +
-                           "input[@value='Delete Subscription']");
-      clickByXpath("//input[@value='Yes: Delete Calendar!']");
-      assertThat("Must have 'deleted' message",
-                 findById("messages").getText(),
-                 containsString("deleted"));
+      deleteSubscription();
     }
 
-    msg("About to subscribe to " + topicalAreaName);
+    msg("msgAboutToSubscribeToConcerts");
+
     // click the add subscription button
     clickById("addSubButton");
 
     // click the public listing toggle
     clickById("subSwitchPublic");
 
-    clickByXpath("//ul[@id='publicSubscriptionTree']//" +
-                         "li[@class='alias']/" +
-                         "a[text()='" + topicalAreaName + "']");
+    clickByXpath("personalManageCalendarsSelectSubscriptionConcerts");
 
     // determine if the display name updated
-    assertEquals(topicalAreaName,
-                 findById("intSubDisplayName").getAttribute("value"));
+    assertEquals(getProperty("personalSubmissionConcertsName"),
+                 findById("intSubDisplayName").getDomAttribute("value"));
     // change to a new display name
     setTextById("intSubDisplayName", subFinder);
 
     // add the subscription
     clickById("intSubSubmit");
 
-    msg("Public subscription added: about to test for, and click, link.");
+    msg("msgPublicSubscriptionAdded");
 
-    // *****************************************************************
+    // **************************************************
     // Now check the subscription is there in the normal calendar listing
     // and select it
-    clickByXpath(navXpath);
+    clickByXpath("personalNavXpathSubmissionConcerts");
 
-    msg("Public subscription added.");
+    msg("msgPublicSubscriptionClicked");
 
     // See if any events we added are visible
 
-    final var event = findByXpath(
-            "//table[@id='monthCalendarTable']//" +
-                    "a[contains(text(), '" +
-                    getProperty(propPublicEventTitlePrefix) +
-                    "')]");
+    findByXpath("personalSubFindPublicEvent");
 
     // Now delete the subscription
-    clickByXpath("//a[@class='calManageLink']");
-    clickByXpath(subXpath);
-    clickByXpath("//input[@value='Delete Subscription']");
-    clickByXpath("//input[@value='Yes: Delete Calendar!']");
+    deleteSubscription();
+  }
 
-    findByXpath("//ul[@id='messages']/li[contains(text(), 'Deleted')]");
+  private void deleteSubscription() {
+    clickByXpath("personalManageCalendarsLink");
+    clickByXpath("personalXpathManageSubmissionConcerts");
+    clickByXpath("personalDeleteSubscriptionPath");
+    clickByXpath("personalDeleteSubscriptionConfirmPath");
+
+    assertThat(getProperty("msgMustHaveDeleted"),
+               findById("messages").getText(),
+               containsString(getProperty("personalDeletedSubCalText")));
   }
 }

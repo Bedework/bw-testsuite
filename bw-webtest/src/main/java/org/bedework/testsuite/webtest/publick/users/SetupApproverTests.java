@@ -73,13 +73,13 @@ public class SetupApproverTests extends PublicAdminTestBase {
                "check approver tabs");
 
     assertThat("Should not see user and system tabs",
-               presentByXpath(getProperty(propAdminTabMainPath)) &&
-                       presentByXpath(getProperty(propAdminTabApprovalqPath)) &&
-                       presentByXpath(getProperty(propAdminTabSuggestionqPath)) &&
-                       presentByXpath(getProperty(propAdminTabPendingqPath)) &&
-                       presentByXpath(getProperty(propAdminTabCalendarSuitePath)) &&
-                       !presentByXpath(getProperty(propAdminTabUsersPath)) &&
-                       !presentByXpath(getProperty(propAdminTabSystemPath)));
+               presentByXpathStr(getProperty(propAdminTabHomePath)) &&
+                       presentByXpathStr(getProperty(propAdminTabApprovalqPath)) &&
+                       presentByXpathStr(getProperty(propAdminTabSuggestionqPath)) &&
+                       presentByXpathStr(getProperty(propAdminTabPendingqPath)) &&
+                       presentByXpathStr(getProperty(propAdminTabCalendarSuitePath)) &&
+                       !presentByXpathStr(getProperty(propAdminTabUsersPath)) &&
+                       !presentByXpathStr(getProperty(propAdminTabSystemPath)));
     logout();
   }
 
@@ -114,13 +114,13 @@ public class SetupApproverTests extends PublicAdminTestBase {
                "as approver to check tabs");
 
     assertThat("Should not see user and system tabs",
-               presentByXpath(getProperty(propAdminTabMainPath)) &&
-                       presentByXpath(getProperty(propAdminTabApprovalqPath)) &&
-                       presentByXpath(getProperty(propAdminTabSuggestionqPath)) &&
-                       presentByXpath(getProperty(propAdminTabPendingqPath)) &&
-                       presentByXpath(getProperty(propAdminTabCalendarSuitePath)) &&
-                       !presentByXpath(getProperty(propAdminTabUsersPath)) &&
-                       !presentByXpath(getProperty(propAdminTabSystemPath)));
+               presentByXpathStr(getProperty(propAdminTabHomePath)) &&
+                       presentByXpathStr(getProperty(propAdminTabApprovalqPath)) &&
+                       presentByXpathStr(getProperty(propAdminTabSuggestionqPath)) &&
+                       presentByXpathStr(getProperty(propAdminTabPendingqPath)) &&
+                       presentByXpathStr(getProperty(propAdminTabCalendarSuitePath)) &&
+                       !presentByXpathStr(getProperty(propAdminTabUsersPath)) &&
+                       !presentByXpathStr(getProperty(propAdminTabSystemPath)));
 
     logout();
   }

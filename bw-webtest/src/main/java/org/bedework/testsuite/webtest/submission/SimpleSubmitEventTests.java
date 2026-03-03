@@ -36,12 +36,12 @@ public class SimpleSubmitEventTests extends SubmissionTestBase {
     submissionsLogin(getProperty(propSubmissionsUser),
                      getProperty(propSubmissionsPw));
 
-    clickByXpath("//ul[@id='menuTabs']/li/" +
+    clickByXpathStr("//ul[@id='menuTabs']/li/" +
                          "a[contains(@href, 'initEvent.do')]");
 
     addSummary(eventTitle);
     addDescription("bedework submission test description");
-    findByXpath(getProperty(propSubmitEventTopicalArea1Xpath)).click();
+    findByXpathStr(getProperty(propSubmitEventTopicalArea1Xpath)).click();
     setALocation();
     setAContact();
     setTime();
@@ -51,10 +51,10 @@ public class SimpleSubmitEventTests extends SubmissionTestBase {
 
     // Should be in list of own pending events
 
-    clickByXpath("//ul[@id='menuTabs']/li/" +
+    clickByXpathStr("//ul[@id='menuTabs']/li/" +
                          "a[contains(@href, 'initPendingEvents.do')]");
 
-    findByXpath("//table[@id='commonListTable']//" +
+    findByXpathStr("//table[@id='commonListTable']//" +
                         "a[contains(text(), '" + uuid + "')]");
 
     logout();
@@ -66,9 +66,9 @@ public class SimpleSubmitEventTests extends SubmissionTestBase {
 
     tabPendingQueue();
 
-    clickByXpath("//table[@id='commonListTable']//" +
+    clickByXpathStr("//table[@id='commonListTable']//" +
                          "a[contains(text(), '" + uuid + "')]");
-    clickByXpath("//form[@id='bwEventForm']//" +
+    clickByXpathStr("//form[@id='bwEventForm']//" +
                          "input[@value='Claim Event']");
   }
 }
