@@ -5,49 +5,30 @@ package org.bedework.testsuite.webtest.submission;
 
 import org.bedework.testsuite.webtest.publick.PublicAdminTestBase;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * User: mike Date: 8/21/24 Time: 17:02
  */
 public class SubmissionTestBase extends PublicAdminTestBase {
-  public static final String propSubmissionsHome =
-          "submissionsHome";
-
-  public static final String propSubmissionsUser =
-          "submissionsUser";
-  public static final String propSubmissionsPw =
-          "submissionsPw";
-
-  public static final String propSubmissionsFooter =
-          "submissionsFooter";
-
-  public static final String propSubmissionsEventTitlePrefix =
-          "submissionsEventTitlePrefix";
-
-  public static final String propSubmitEventTopicalArea1Xpath =
-          "submitEventTopicalArea1Xpath";
-
-
   /**
    * Login to the admin web client
    */
-  public void submissionsLogin(final String user,
-                               final String password) {
-    final var driver = getWebDriver();
-
-    driver.get(getProperty(propSubmissionsHome));
+  public void submissionsLogin(final String userProp,
+                               final String passwordProp) {
+    setPropertyFrom("user", userProp);
+    goToHref("submissionsHome");
 
     // Log in to the client
-    final var element = sendLoginGetFooter(user, password);
-
-    assertEquals(element.getText(),
-                 getProperty(propSubmissionsFooter));
+    assertThat(getProperty("assertionFooterMustContain"),
+               sendLoginGetFooter(userProp,
+                                  passwordProp).getText(),
+               containsString(getProperty("submissionsFooter")));
 
     // Output the footer text:
-    msgStr("Logged into submissions client as user \"" +
-                 user + "\"");
+    msg("msgSubmissionLoggedIn");
   }
 
   public void clickSubmitEvent() {
@@ -59,7 +40,7 @@ public class SubmissionTestBase extends PublicAdminTestBase {
 
     if (presentById("errors")) {
       fail("Errors on event submission: " +
-                   findById("errors").getText());
+               textById("errors");
     }
   }
 }

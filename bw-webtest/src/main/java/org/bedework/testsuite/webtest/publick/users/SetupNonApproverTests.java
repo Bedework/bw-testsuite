@@ -23,9 +23,8 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
   @DisplayName("Public events: Set up a non approver and check")
   public void setupUser() {
     // Login as a superuser
-    adminLogin(getProperty(propAdminSuperUser),
-               getProperty(propAdminSuperUserPw),
-               "set up non-approver user");
+    adminLogin("adminSuperUser", "adminSuperUserPw",
+               "adminLoginSetupNonapproverPurpose");
 
     msgStr("Visit admin user roles page");
     userRolesPage();
@@ -40,15 +39,15 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
     msgStr("Visit admin group list page");
     adminGroupListPage();
 
-    final var groupName = getProperty(propNonApproverUserGroupName);
-    if (!adminGroupManageMembersPage(groupName)) {
+    if (!adminGroupManageMembersPage("nonApproverUserGroupName")) {
       msgStr("Create admin group");
       // Create group
       clickAdminInputButton("admingroup/initAdd.do");
 
-      setTextByName("updAdminGroup.account", groupName);
-      setTextByName("updAdminGroup.description", "For tests");
-      setTextByName("adminGroupGroupOwner", "admin");
+      setTextByName("updAdminGroup.account",
+                    "nonApproverUserGroupName");
+      setTextByNameStr("updAdminGroup.description", "For tests");
+      setTextByNameStr("adminGroupGroupOwner", "admin");
       clickByNameNoErrors("updateAdminGroup",
                           "Adding non-approver admin group");
     }
@@ -56,35 +55,31 @@ public class SetupNonApproverTests extends PublicAdminTestBase {
     // Ensure in main group -
 
     msgStr("Add non-approver group to parent group");
-    addGroupToGroup(groupName,
-                   getProperty(propNonApproverGroupParentName));
-
-    final var nonApproverUser =
-            getProperty(propNonApproverUser);
+    addGroupToGroup("nonApproverUserGroupName",
+                    "nonApproverGroupParentName");
 
     msgStr("Add non-approver user to non-approver group");
-    addUserToGroup(nonApproverUser, groupName);
+    addUserToGroup("nonApproverUser",
+                   "nonApproverGroupParentName");
 
     msgStr("Logging out from non-approver setup");
     logout();
 
-    msg("Try login as non-approver %s\n",
-        nonApproverUser);
+    msg("msgAdminTryNonapproverLogin");
 
     // Log in to admin client and check visibility of elements
-    adminLogin(nonApproverUser,
-               getProperty(propNonApproverUserPw),
-               "check non-approver tabs");
+    adminLogin("nonApproverUser", "nonApproverUserPw",
+               "adminLoginNonapproverCheckTabsPurpose");
 
-    assertThat("Should see main and approval q tabs only",
-               presentByXpathStr(
-                       getProperty(propAdminTabHomePath)) &&
-                       presentByXpathStr(getProperty(propAdminTabApprovalqPath)) &&
-                       !presentByXpathStr(getProperty(propAdminTabSuggestionqPath)) &&
-                       !presentByXpathStr(getProperty(propAdminTabPendingqPath)) &&
-                       !presentByXpathStr(getProperty(propAdminTabCalendarSuitePath)) &&
-                       !presentByXpathStr(getProperty(propAdminTabUsersPath)) &&
-                       !presentByXpathStr(getProperty(propAdminTabSystemPath)));
+    assertThat(getProperty("assertionAdminNonappproverVisibleTabs"),
+               presentByXpath("adminTabHomePath") &&
+                   presentByXpath("adminTabAddEventPath") &&
+                   presentByXpath("adminTabApprovalqPath") &&
+                   !presentByXpath("adminTabSuggestionqPath") &&
+                   !presentByXpath("adminTabPendingqPath") &&
+                   !presentByXpath("adminTabCalendarSuitePath") &&
+                   !presentByXpath("adminTabUsersPath") &&
+                   !presentByXpath("adminTabSystemPath"));
 
     logout();
   }

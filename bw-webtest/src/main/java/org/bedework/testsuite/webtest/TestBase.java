@@ -18,31 +18,26 @@
  */
 package org.bedework.testsuite.webtest;
 
+import org.bedework.testsuite.webtest.Driver.DriverType;
+
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.property.DtStart;
 import org.apache.commons.lang3.SystemUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -50,15 +45,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  */
 public class TestBase {
-  /** Browser drivers */
-  public enum DriverType {
-    HTMLUNIT, FIREFOX, IE, CHROME;
-  }
-
-  private static DriverType dType;
-
-  private WebDriver driver;
-  private Actions actions;
+  private Driver driver;
 
   private static final ThreadLocal<TestProperties> props =
       new ThreadLocal<>();
@@ -66,21 +53,8 @@ public class TestBase {
 
   protected static boolean isMac = SystemUtils.IS_OS_MAC;
 
-  // Property names
-  /** Driver type */
-  public static final String propDriverType = "driverType";
-
   /** Logout string - found in the URL */
   public static final String propLogoutText = "logoutText";
-
-  public static final String propBedeworkLogo = "bedeworkLogo";
-  public static final String propBedeworkLogoThumb = "bedeworkLogoThumb";
-
-  /** Public client strings for testing */
-
-  public static final String propPublicHost = "publicHost";
-  public static final String propPublicHome = "publicHome";
-  public static final String propPublicFooter = "publicFooter";
 
   public String getDateAfter(final String duration) {
     final var dur = new Dur(duration);
@@ -95,8 +69,7 @@ public class TestBase {
     /*
     /html/body/div[2]/div/a[2]
      */
-    final var element = findByName(fieldName);
-    element.click();
+    clickByName(fieldName);
 
     // Date picker should be up
 
@@ -129,65 +102,27 @@ public class TestBase {
     return getProperties().getProperty(name);
   }
 
+  public void setUUID() {
+    setProperty("uuid", UUID.randomUUID().toString());
+  }
+
   public void setProperty(final String name,
                           final String value) {
     props.get().setProperty(name, value);
   }
 
-  /** Type to be used for tests
-   *
-   * @param val driver type
-   */
-  public static void setDriverType(final DriverType val) {
-    dType = val;
+  public void setPropertyFrom(final String name,
+                              final String valueProp) {
+    props.get().setProperty(name, getProperty(valueProp));
   }
 
-  /**
-   * @return current driver type
-   */
-  public static DriverType getDriverType() {
-    return dType;
-  }
-
-  /**
-   * Get a driver of the current type
-   *
-   * @return driver
-   */
-  public WebDriver getWebDriver() {
-    if (driver != null) {
-      return driver;
+  public Driver driver() {
+    if (driver == null) {
+      driver = new Driver(
+          DriverType.valueOf(getProperty("driverType")));
     }
-
-    setDriverType(DriverType.valueOf(
-            getProperty(propDriverType)));
-
-    switch(getDriverType()) {
-      case HTMLUNIT:
-        driver = new HtmlUnitDriver();
-        break;
-      case FIREFOX:
-        driver = new FirefoxDriver();
-        break;
-      case IE:
-        driver = new InternetExplorerDriver();
-        break;
-      case CHROME:
-        driver = new ChromeDriver();
-        break;
-    }
-
-    driver.manage().timeouts().implicitlyWait(
-            java.time.Duration.ofSeconds(10));
 
     return driver;
-  }
-
-  public Actions getActions() {
-    if (actions == null) {
-      actions = new Actions(getWebDriver());
-    }
-    return actions;
   }
 
   /** Close the driver - and the browser.
@@ -200,68 +135,56 @@ public class TestBase {
   }
 
   protected void toIframe(final String id) {
-    final var iframe = getWebDriver().findElement(By.id(id));
-    getWebDriver().switchTo().frame(iframe);
+    driver().toIframeById(id);
   }
 
   protected void toDefault() {
-    getWebDriver().switchTo().defaultContent();
+    driver().toDefault();
   }
 
   protected void sendLogin(
-          final String user,
-          final String password) {
+          final String userProp,
+          final String passwordProp) {
     // Log in to the client
-    final WebElement element = driver.findElement(By.name("j_username"));
-    element.sendKeys(user);
-    final var pwElement = driver.findElement(By.name("j_password"));
-    pwElement.sendKeys(password);
-    pwElement.submit();
+    findByName("j_username").sendKeys(getProperty(userProp));
+    findByName("j_password").sendKeys(getProperty(passwordProp));
+    clickByName("j_security_check");
   }
 
   protected WebElement sendLoginGetFooter(
-          final String user,
-          final String password) {
-    sendLogin(user, password);
+          final String userProp,
+          final String passwordProp) {
+    sendLogin(userProp, passwordProp);
 
     // Verify that we are logged in
-    return driver.findElement(By.id("footer"));
+    return findById("footer");
   }
 
   public void logout() {
     // Scroll to the top
-    getActions().sendKeys(Keys.HOME).build().perform();
-    final WebElement element = getWebDriver().
-            findElement(By.xpath(
-                    "//a[@id=\"bwLogoutButton\" and contains(@href, '" +
-                        getProperty(propLogoutText) +
-                        "')]"));
-    assertNotNull(element);
-    element.click();
+    driver().scrollToTop();
+    clickByXpath("commonLogoutButton");
     findById("loginBox");
   }
 
   public boolean checkboxValue(final String id) {
-    final WebElement checkbox =
-            getWebDriver().findElement(By.id(id));
-    return checkbox.isSelected();
+    return findById(id).isSelected();
   }
 
   public void checkPublicPageForEvent(final String time) {
     // ****************************************
     // Now test the event in the public client.
-    msg("msgeventPublishedCheckingPublic");
+    msg("msgEventPublishedCheckingPublic");
 
-    getPublicPage(getProperty(propPublicHome));
+    getPublicPage("publicHome");
 
     // The event should exist today.  It should be on the current page.
     // The following will fail if not found:
-    getPublicPageByXpath(getProperty("publicEventByUUID"));
+    getPublicPageByXpath("publicEventByUUID");
 
     msg("msgEventFound");
 
-    final var actual = findByXpath("publicEventTime")
-        .getText()
+    final var actual = textByXpath("publicEventTime")
         .replaceAll("\\u202F", " ");
     // May need to replace other localization characters.
 
@@ -282,7 +205,7 @@ public class TestBase {
    */
   public boolean setCheckboxValueIfNeeded(final String name,
                                           final boolean value) {
-    final WebElement checkbox = findByName(name);
+    final var checkbox = findByName(name);
     if (checkbox.isSelected() == value) {
       return false;
     }
@@ -299,7 +222,7 @@ public class TestBase {
    */
   public boolean setRadioByIdIfNeeded(final String id,
                                           final boolean value) {
-    final WebElement radio = findById(id);
+    final var radio = findById(id);
     if (radio.isSelected() == value) {
       return false;
     }
@@ -322,22 +245,18 @@ public class TestBase {
 
     if (presentById("errors")) {
       fail(message + ": " +
-                   findById("errors").getText());
+               textById("errors"));
     }
   }
 
-  public void clickByXpathStr(final String path) {
-    findByXpathStr(path).click();
-  }
-
   public void clickByXpath(final String pathProp) {
-    findByXpathStr(getProperty(pathProp)).click();
+    findByXpath(pathProp).click();
   }
 
   public void errorMustContain(final String reason,
                                final String matchValue) {
     assertThat(reason,
-               findById("errors").getText(),
+               textById("errors"),
                containsString(matchValue));
   }
 
@@ -345,50 +264,57 @@ public class TestBase {
           final String reason,
           final String matchValue) {
     assertThat(reason,
-               findById("errors").getText(),
+               textById("errors"),
                not(containsString(matchValue)));
   }
 
+  public WebElement parentOf(final WebElement val) {
+    return val.findElement(By.xpath("./.."));
+  }
+
   public WebElement findById(final String id) {
-    return getWebDriver().findElement(By.id(id));
+    return driver().findById(id);
   }
 
   public WebElement findByName(final String val) {
-    return getWebDriver().findElement(By.name(val));
+    return driver().findByName(val);
   }
 
   public WebElement findByTag(final String val) {
-    return getWebDriver().findElement(By.tagName(val));
+    return driver().findByTag(val);
   }
 
   public WebElement findByXpath(final String pathProp) {
-    return getWebDriver().findElement(By.xpath(getProperty(pathProp)));
+    return driver().findByXpath(getProperty(pathProp));
   }
 
   public WebElement findByXpathStr(final String path) {
-    return getWebDriver().findElement(By.xpath(path));
+    return driver().findByXpath(path);
   }
 
   public WebElement findByAttribute(final String attr) {
-    return getWebDriver().findElement(
-            By.cssSelector("[" + attr + "]"));
+    return driver().findByAttribute(attr);
   }
 
-  public String getTextById(final String id) {
+  public String textById(final String id) {
     return findById(id).getText();
   }
 
-  public String getTextByTag(final String tag) {
+  public String textByTag(final String tag) {
     return findByTag(tag).getText();
   }
 
-  public String getTextByXpath(final String pathProp) {
-    return findByXpathStr(getProperty(pathProp)).getText();
+  public String textByXpath(final String pathProp) {
+    return findByXpath(pathProp).getText();
+  }
+
+  public String textByAttribute(final String attr) {
+    return findByAttribute(attr).getText();
   }
 
   public boolean presentById(final String id) {
     try {
-      getWebDriver().findElement(By.id(id));
+      findById(id);
       return true;
     } catch (final NoSuchElementException ignored) {
       return false;
@@ -396,38 +322,35 @@ public class TestBase {
   }
 
   public boolean presentByXpath(final String pathProp) {
-    try {
-      getWebDriver().findElement(By.xpath(getProperty(pathProp)));
-      return true;
-    } catch (final NoSuchElementException ignored) {
-      return false;
-    }
-  }
-
-  public boolean presentByXpathStr(final String path) {
-    try {
-      getWebDriver().findElement(By.xpath(path));
-      return true;
-    } catch (final NoSuchElementException ignored) {
-      return false;
-    }
+    return driver().presentByXpath(getProperty(pathProp));
   }
 
   public void setTextById(final String id,
-                          final String val) {
+                          final String valProp) {
+    driver().setTextById(id, getProperty(valProp));
+  }
+
+  public void setTextByIdStr(final String id,
+                             final String val) {
     findById(id).sendKeys(val);
   }
 
   public void setTextByName(final String name,
-                            final String val) {
+                            final String valProp) {
+    findByName(name).sendKeys(getProperty(valProp));
+  }
+
+  public void setTextByNameStr(final String name,
+                               final String val) {
     findByName(name).sendKeys(val);
   }
 
   public boolean tableHasElementText(final String id,
-                                            final String val) {
+                                     final String valProp) {
     final var table = findById(id);
     final List<WebElement> cells =
             table.findElements(By.tagName("td"));
+    final var val = getProperty(valProp);
 
     for (final var cell: cells) {
       if (cell.getText().equals(val)) {
@@ -437,22 +360,24 @@ public class TestBase {
     return false;
   }
 
-  public void getPublicPage(final String href) {
-    getWebDriver().get(href);
+  public void goToHref(final String hrefProp) {
+    driver().toHref(getProperty(hrefProp));
+  }
+
+  public void getPublicPage(final String hrefProp) {
+    goToHref(hrefProp);
     checkPublicPage();
   }
 
-  public void getPublicPageByXpath(final String xpath) {
-    findByXpathStr(xpath).click();
+  public void getPublicPageByXpath(final String xpathProp) {
+    clickByXpath(xpathProp);
     checkPublicPage();
   }
 
   public void checkPublicPage() {
-    final WebElement e = findById("footer");
-
     assertThat("Footer must contain correct text: ",
-               e.getText(),
-               containsString(getProperty(propPublicFooter)));
+               textById("footer"),
+               containsString(getProperty("publicFooter")));
   }
 
   public ExpectedCondition<WebElement> visibilityOfElementLocated(final By locator) {

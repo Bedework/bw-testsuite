@@ -5,8 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,18 +28,19 @@ public class AddPublicSubTests extends PersonalTestBase {
   @Test
   @DisplayName("Personal events: Add a public event subscription")
   public void testAddPubSub() {
-    final String subFinder = "-" +
-            UUID.randomUUID().toString().substring(0, 4);
+    setUUID();
+    final var subFinder = "-" +
+        getProperty("uuid").substring(0, 4);
 
-    personalLogin(propPersonalUser, propPersonalPw);
+    personalLogin("personalUser", "personalPw");
 
     // get to the manage calendars page
     clickByXpath("personalManageCalendarsLink");
 
     assertEquals(
-            getTextByXpath(
+        textByXpath(
                     "personalManageCalendarsValidationPath"),
-                 getProperty("personalManageCalendarsValidationValue"));
+        getProperty("personalManageCalendarsValidationValue"));
     msg("msgPersonalOnManageCalPage");
 
     // Ensure no previous subscription
@@ -65,7 +64,7 @@ public class AddPublicSubTests extends PersonalTestBase {
     assertEquals(getProperty("personalSubmissionConcertsName"),
                  findById("intSubDisplayName").getDomAttribute("value"));
     // change to a new display name
-    setTextById("intSubDisplayName", subFinder);
+    setTextByIdStr("intSubDisplayName", subFinder);
 
     // add the subscription
     clickById("intSubSubmit");
@@ -94,7 +93,7 @@ public class AddPublicSubTests extends PersonalTestBase {
     clickByXpath("personalDeleteSubscriptionConfirmPath");
 
     assertThat(getProperty("msgMustHaveDeleted"),
-               findById("messages").getText(),
+               textById("messages"),
                containsString(getProperty("personalDeletedSubCalText")));
   }
 }

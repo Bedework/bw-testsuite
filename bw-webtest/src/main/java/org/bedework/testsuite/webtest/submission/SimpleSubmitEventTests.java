@@ -8,8 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 /**
  * User: mike Date: 8/21/24 Time: 17:23
  */
@@ -28,47 +26,37 @@ public class SimpleSubmitEventTests extends SubmissionTestBase {
   @Test
   @DisplayName("Submit events: Submit a public event that is accepted")
   public void testSubmit() {
-    final String uuid = UUID.randomUUID().toString();
-    final String eventTitle =
-            getProperty(propSubmissionsEventTitlePrefix) +
-                    " - " + uuid;
+    setUUID();
 
-    submissionsLogin(getProperty(propSubmissionsUser),
-                     getProperty(propSubmissionsPw));
+    submissionsLogin("submissionsUser", "submissionsPw");
 
-    clickByXpathStr("//ul[@id='menuTabs']/li/" +
-                         "a[contains(@href, 'initEvent.do')]");
+    clickByXpath("submissionsAddEventPath");
 
-    addSummary(eventTitle);
-    addDescription("bedework submission test description");
-    findByXpathStr(getProperty(propSubmitEventTopicalArea1Xpath)).click();
+    addSummary("submissionsEventTitle");
+    addDescription("submissionsEventDescription");
+    clickByXpath("submitEventTopicalArea1Xpath");
     setALocation();
     setAContact();
     setTime();
 
-    setTextByName("xBwEmailHolder", "example@example.org");
+    setTextByNameStr("xBwEmailHolder", "example@example.org");
     clickSubmitEventNoErrors();
 
     // Should be in list of own pending events
-
-    clickByXpathStr("//ul[@id='menuTabs']/li/" +
-                         "a[contains(@href, 'initPendingEvents.do')]");
-
-    findByXpathStr("//table[@id='commonListTable']//" +
-                        "a[contains(text(), '" + uuid + "')]");
+    clickByXpath("submissionsPendingTabPath");
+    findByXpath("submissionsEventByUUID");
 
     logout();
 
     // ================ Check pending queue and claim it
-    adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw),
-               "check pending queue");
+    adminLogin("approverUser", "approverUserPw",
+               "adminLoginCheckPendingPurpose");
 
-    tabPendingQueue();
+    pendingQueuePage();
 
-    clickByXpathStr("//table[@id='commonListTable']//" +
-                         "a[contains(text(), '" + uuid + "')]");
-    clickByXpathStr("//form[@id='bwEventForm']//" +
-                         "input[@value='Claim Event']");
+    clickByXpath("adminEventByUUID");
+
+    // On the editForm page
+    clickByXpath("adminClaimSubmittedEventPath");
   }
 }

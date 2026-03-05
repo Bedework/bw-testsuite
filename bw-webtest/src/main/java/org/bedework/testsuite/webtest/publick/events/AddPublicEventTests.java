@@ -25,8 +25,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -49,15 +47,14 @@ public class AddPublicEventTests extends PublicAdminTestBase {
   @Test
   @DisplayName("Public events: Add an event")
   public void testProcess() {
-    setProperty("uuid", UUID.randomUUID().toString());
+    setUUID();
 
-    adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw),
-               "add public event");
+    adminLogin("approverUser", "approverUserPw",
+               "adminLoginAddPublicEventPurpose");
 
     // get to the Add Event page
-    startAddEvent(getProperty("publicEventTitle"),
-                  getProperty("publicEventAddDescription"));
+    startAddEvent("publicEventTitle",
+                  "publicEventAddDescription");
 
     // test basic validation without filling in the form
     clickAddEvent();
@@ -96,16 +93,13 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     setTime();
 
     // set the cost and link
-    setTextByName("eventCost", "FREE");
-    setTextByName("eventLink",
-                  getProperty("adminEventLink"));
+    setTextByNameStr("eventCost", "FREE");
+    setTextByName("eventLink", "adminEventLink");
 
     // image and thumbnail URLs
     // we'll check image uploads in update event test, because we need to also test image removal
-    setTextByName("xBwImageHolder",
-                  getProperty("bedeworkLogo"));
-    setTextByName("xBwImageThumbHolder",
-                  getProperty("bedeworkLogoThumb"));
+    setTextByName("xBwImageHolder", "bedeworkLogo");
+    setTextByName("xBwImageThumbHolder", "bedeworkLogoThumb");
 
     // submit the event
     clickAddEventNoErrors();
@@ -119,15 +113,14 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     checkPublicPageForEvent("2:00 PM");
 
     // Now remove the event
-    adminLogin(getProperty(propAdminSuperUser),
-               getProperty(propAdminSuperUserPw),
-               "remove the public event");
+    adminLogin("adminSuperUser", "adminSuperUserPw",
+               "adminLoginRemovePublicEventPurpose");
     manageEventsPage();
     clickByXpath("adminEventByUUID");
     clickByXpath("adminDeleteEventLink");
     clickByXpath("adminDeleteEventConfirm");
     assertThat("Must have 'deleted' message",
-               findById("messages").getText(),
+               textById("messages"),
                containsString(getProperty("adminDeletedEventText")));
   }
 }

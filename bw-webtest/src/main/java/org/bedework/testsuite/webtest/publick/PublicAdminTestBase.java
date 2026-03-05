@@ -17,119 +17,43 @@ import static org.junit.jupiter.api.Assertions.fail;
  * User: mike Date: 8/6/24 Time: 23:40
  */
 public class PublicAdminTestBase extends TestBase {
-  public static final String propAdminSuperUser = "adminSuperUser";
-  public static final String propAdminSuperUserPw = "adminSuperUserPw";
-
-  // Admin - approver user
-  public static final String propApproverUser =
-          "approverUser";
-  public static final String propApproverPrincipal =
-          "approverPrincipal";
-  public static final String propApproverUserPw =
-          "approverUserPw";
-  public static final String propApproverUserGroupName =
-          "approverUserGroupName";
-
-  // Admin - non-approver user
-  public static final String propNonApproverUser =
-          "nonApproverUser";
-  public static final String propNonApproverPrincipal =
-          "nonApproverPrincipal";
-  public static final String propNonApproverUserPw =
-          "nonApproverUserPw";
-  public static final String propNonApproverUserGroupName =
-          "nonApproverUserGroupName";
-  public static final String propNonApproverGroupParentName =
-          "nonApproverGroupParentName";
-
-  // Admin - approver user
-  public static final String propApproverUser2Groups =
-          "approverUser2Groups";
-  public static final String propApproverPrincipal2Groups =
-          "approverPrincipal2Groups";
-  public static final String propApproverUser2GroupsPw =
-          "approverUser2GroupsPw";
-
-  public static final String propAdminEventInfoTitle =
-          "adminEventInfoTitle";
-  public static final String propAdminManageEventsTitle =
-          "adminManageEventsTitle";
-  public static final String propAdminErrorNoTopicalArea =
-          "adminErrorUpdateEventTopicalArea";
-  public static final String propAdminErrorNoTitle =
-          "adminErrorUpdateEventNoTitle";
-  public static final String propAdminErrorNoDescription =
-          "adminErrorUpdateEventNoDescription";
-  public static final String propAdminErrorNoLocation =
-          "adminErrorUpdateEventNoLocation";
-  public static final String propAdminErrorNoContact =
-          "adminErrorUpdateEventNoContact";
-
-  // Values for added event
-  public static final String propAdminEventTopicalArea1 =
-          "adminEventTopicalArea1";
-  public static final String propAdminEventTopicalArea1Xpath =
-          "adminEventTopicalArea1Xpath";
-  public static final String propAdminEventLink =
-          "adminEventLink";
-
-  // Tab paths
-  public static final String propAdminTabHomePath =
-          "adminTabHomePath";
-  public static final String propAdminTabAddEventPath =
-          "adminTabAddEventPath";
-  public static final String propAdminTabApprovalqPath =
-          "adminTabApprovalqPath";
-  public static final String propAdminTabSuggestionqPath =
-          "adminTabSuggestionqPath";
-  public static final String propAdminTabPendingqPath =
-          "adminTabPendingqPath";
-  public static final String propAdminTabCalendarSuitePath =
-          "adminTabCalendarSuitePath";
-  public static final String propAdminTabUsersPath =
-          "adminTabUsersPath";
-  public static final String propAdminTabSystemPath =
-          "adminTabSystemPath";
-
   /**
    * Login to the admin web client
    */
-  public void adminLogin(final String user,
-                         final String password,
-                         final String purpose) {
-    setProperty("user", user);
-    setProperty("loginPurpose", purpose);
+  public void adminLogin(final String userProp,
+                         final String passwordProp,
+                         final String purposeProp) {
+    setPropertyFrom("user", userProp);
+    setPropertyFrom("loginPurpose", purposeProp);
     msg("msgAdminLoginPurpose");
 
-    final var driver = getWebDriver();
-
-    driver.get(getProperty("adminHome"));
+    goToHref("adminHome");
 
     // Log in to the client
-    final var element = sendLoginGetFooter(user, password);
-
-    assertEquals(element.getText(),
-                 getProperty("adminFooter"));
+    assertThat(getProperty("assertionFooterMustContain"),
+               sendLoginGetFooter(userProp,
+                                  passwordProp).getText(),
+               containsString(getProperty("adminFooter")));
 
     // Output the footer text:
-    msgStr("msgAdminLoggedIn");
+    msg("msgAdminLoggedIn");
   }
 
-  public void startAddEvent(final String summary,
-                            final String description) {
+  public void startAddEvent(final String summaryProp,
+                            final String descriptionProp) {
     // get to the Add Event page
     addEventPage();
 
     // Page requires summary, description before submit button works
 
-    addSummary(summary);
-    addDescription(description);
+    addSummary(summaryProp);
+    addDescription(descriptionProp);
   }
 
-  public void startAddEvent(final String summary,
-                            final String description,
+  public void startAddEvent(final String summaryProp,
+                            final String descriptionProp,
                             final String cost,
-                            final String eventLink,
+                            final String eventLinkProp,
                             final String imageThumbURL,
                             final String imageURL) {
     // get to the Add Event page
@@ -137,193 +61,199 @@ public class PublicAdminTestBase extends TestBase {
 
     // Page requires summary, description before submit button works
 
-    addSummary(summary);
-    addDescription(description);
+    addSummary(summaryProp);
+    addDescription(descriptionProp);
     setDefaultTopicalArea();
     setALocation();
     setAContact();
     setTime();
 
     // set the cost and link
-    setTextByName("eventCost", cost);
-    if (eventLink != null) {
-      setTextByName("eventLink", eventLink);
+    setTextByNameStr("eventCost", cost);
+    if (eventLinkProp != null) {
+      setTextByName("eventLink", eventLinkProp);
     }
 
     if (imageThumbURL != null) {
-      setTextByName("xBwImageHolder", imageURL);
-      setTextByName("xBwImageThumbHolder", imageThumbURL);
+      setTextByNameStr("xBwImageHolder", imageURL);
+      setTextByNameStr("xBwImageThumbHolder", imageThumbURL);
     }
   }
 
   public void checkPage() {
-    final var e = findById("footer");
     assertThat("Footer must contain correct text: ",
-               e.getText(),
+               textById("footer"),
                containsString(getProperty("adminFooter")));
   }
 
-  public void getAdminPageByHref(final String href) {
-    getWebDriver().get(href);
+  public void getAdminPageByHref(final String hrefProp) {
+    goToHref(hrefProp);
     checkPage();
   }
 
-  public void getAdminPageByXpath(final String xpath) {
-    findByXpathStr(xpath).click();
+  public void getAdminPageByXpath(final String xpathProp) {
+    clickByXpath(xpathProp);
     checkPage();
   }
 
-  public void getAdminPageByHrefSeg(final String hrefseg) {
+  public void getAdminPageByHrefSeg(final String hrefsegProp) {
     findByXpathStr("//a[contains(@href,'" +
-                        hrefseg +
+                        getProperty(hrefsegProp) +
                         "')]").click();
     checkPage();
   }
 
   public void getAdminPageById(final String id) {
-    findById(id).click();
+    clickById(id);
     checkPage();
   }
 
   public void addEventPage() {
-    getAdminPageByHrefSeg("initAddEvent.do");
-
-    assertEquals(getTextByTag("h2"),
-                 getProperty(propAdminEventInfoTitle));
-    msgStr("On " + getProperty(propAdminEventInfoTitle) + " page.");
+    getAdminPageById("addEventLink");
+    assertEquals(textByTag("h2"),
+                 getProperty("adminEventInfoTitle"));
+    msg("msgAdminOnEventInfoPage");
   }
 
   public void eventsListPage() {
     getAdminPageById("manageEventsLink");
 
-    assertEquals(getTextByTag("h2"),
-                 getProperty(propAdminManageEventsTitle));
-    msgStr("On " + getProperty(propAdminManageEventsTitle) +
-                " page.");
+    assertEquals(textByTag("h2"),
+                 getProperty("adminManageEventsTitle"));
+    msg("msgAdminOnManageEventsPage");
   }
 
   public void adminGroupListPage() {
-    getAdminPageByXpath(getProperty(propAdminTabUsersPath));
-    getAdminPageByHrefSeg("admingroup/initUpdate.do");
+    getAdminPageByXpath("adminTabUsersPath");
+    getAdminPageByXpath("adminGroupManagePath");
   }
 
-  public void tabMainMenu() {
-    getAdminPageByXpath(getProperty(propAdminTabHomePath));
+  public void homePage() {
+    getAdminPageByXpath("adminTabHomePath");
   }
 
-  public void tabApproverQueue() {
-    getAdminPageByXpath(getProperty(propAdminTabApprovalqPath));
+  public void manageEventsPage() {
+    getAdminPageByXpath("adminTabManageEventsPath");
+
+    assertEquals(textByTag("h2"),
+                 getProperty("adminManageEventsTitle"));
+    msg("msgAdminOnManageEventsPage");
   }
 
-  public void tabPendingQueue() {
-    getAdminPageByXpath(getProperty(propAdminTabPendingqPath));
+  public void approvalQueuePage() {
+    getAdminPageByXpath("adminTabApprovalqPath");
   }
 
-  public boolean adminGroupManageMembersPage(final String name) {
+  public void pendingQueuePage() {
+    getAdminPageByXpath("adminTabPendingqPath");
+  }
+
+  /** Sets the "groupName" proeprty and switches to manage that
+   * group
+   *
+   * @param nameProp property containing name
+   * @return true for no error
+   */
+  public boolean adminGroupManageMembersPage(
+      final String nameProp) {
     try {
-      getAdminPageByHrefSeg("admingroup/fetchForUpdateMembers.do?" +
-                                    "b=de&adminGroupName=" +
-                                    name);
+      setPropertyFrom("groupName", nameProp);
+      getAdminPageByXpath("adminGroupManageMembersPagePath");
       return true;
-    } catch (final NoSuchElementException ignored)
-    {
+    } catch (final NoSuchElementException ignored) {
       return false;
     }
   }
 
-  public void addUserToGroup(final String member,
-                             final String groupName) {
+  public void addUserToGroup(final String memberProp,
+                             final String groupNameProp) {
     adminGroupListPage();
+    setPropertyFrom("groupName", groupNameProp);
+    setPropertyFrom("member", memberProp);
 
     // Assuming group exists for the moment
-    assertThat("Admin group " + groupName + " must exist",
-               adminGroupManageMembersPage(groupName));
-    addUserMemberIfNeeded(member);
+    assertThat(getProperty("assertionAdminGroupexists"),
+               adminGroupManageMembersPage(groupNameProp));
+    addUserMemberIfNeeded(memberProp);
   }
 
   // Positioned by call to adminGroupPage()
-  public void addUserMemberIfNeeded(final String member) {
-    if (!tableHasElementText("memberAccountList", member)) {
-      setTextById("agMember", member);
+  public void addUserMemberIfNeeded(final String memberProp) {
+    if (!tableHasElementText("memberAccountList", memberProp)) {
+      setTextById("agMember", memberProp);
       clickById("agUser");
       clickByName("addGroupMember");
     }
   }
 
-  public void addGroupToGroup(final String member,
-                             final String groupName) {
+  public void addGroupToGroup(final String memberProp,
+                             final String groupNameProp) {
+    setPropertyFrom("groupName", groupNameProp);
+    setPropertyFrom("member", memberProp);
     msgStr("Revisit admin group list page");
     adminGroupListPage();
 
     // Assuming group exists for the moment
-    assertThat("Admin group " + groupName + " must exist",
-               adminGroupManageMembersPage(groupName));
-    addGroupMemberIfNeeded(member);
+    assertThat(getProperty("assertionAdminGroupexists"),
+               adminGroupManageMembersPage(groupNameProp));
+    addGroupMemberIfNeeded(memberProp);
   }
 
   // Positioned by call to adminGroupPage()
-  public void addGroupMemberIfNeeded(final String member) {
-    if (!tableHasElementText("memberAccountList", member)) {
-      setTextById("agMember", member);
+  public void addGroupMemberIfNeeded(final String memberProp) {
+    if (!tableHasElementText("memberAccountList", memberProp)) {
+      setTextById("agMember", memberProp);
       clickById("agGroup");
       clickByName("addGroupMember");
     }
   }
 
-  public void manageEventsPage() {
-    getAdminPageByHrefSeg("initUpdateEvent.do");
-  }
-
   public void userRolesPage() {
     // get to the user roles page
-    getAdminPageByXpath(getProperty(propAdminTabUsersPath));
+    getAdminPageByXpath("adminTabUsersPath");
     getAdminPageByHrefSeg("authuser/initUpdate.do");
   }
 
-  public void addSummary(final String val) {
-    setTextByName("summary", val);
+  public void addSummary(final String valProp) {
+    setTextByName("summary", valProp);
   }
 
-  public void addDescription(final String val) {
-    setTextByName("description", val);
+  public void addDescription(final String valProp) {
+    setTextByName("description", valProp);
   }
 
   public void setTopicalArea(final String pathPropName) {
-    findByXpathStr(getProperty(pathPropName)).click();
+    clickByXpath(pathPropName);
   }
 
   public void setDefaultTopicalArea() {
-    findByXpathStr(getProperty(propAdminEventTopicalArea1Xpath)).click();
+    clickByXpath("adminEventTopicalArea1Xpath");
   }
 
   public void setALocation() {
     // select a location
     /* Only have search option
-    findById("bwLocationAllButton").click();
+    clickById("bwLocationAllButton");
     select = new Select(findById("bwAllLocationList"));
     select.selectByIndex(1);
      */
 
     // Set text in search box
-    setTextById("bwLocationSearch", "loc");
-    final var selectedLoc = findByXpathStr(
-            "//div[@id=\"bwLocationSearchResults\"]/ul/li[1]");
-    selectedLoc.click();
+    setTextByIdStr("bwLocationSearch", "loc");
+    clickByXpath("adminSelectInLocSearch");
   }
 
   public void setAContact() {
     // select a contact
     /* Only have search option
-    findById("bwContactAllButton").click();
+    clickById("bwContactAllButton");
     select = new Select(findById("bwAllContactList"));
     select.selectByIndex(1);
      */
 
     // Set text in search box
-    setTextById("bwContactSearch", "co");
-    final var selectedContact = findByXpathStr(
-            "//div[@id=\"bwContactSearchResults\"]/ul/li[1]");
-    selectedContact.click();
+    setTextByIdStr("bwContactSearch", "co");
+    clickByXpath("adminSelectInContactSearch");
   }
 
   /**
@@ -355,29 +285,16 @@ public class PublicAdminTestBase extends TestBase {
                         locationSeg + "')]").click();
   }
 
-  public void clickAdminButton(final String locationSeg,
-                               final String... value) {
-    final String valuePart;
-    if (value.length == 0) {
-      valuePart = "";
-    } else {
-      valuePart = "and contains(text(), '" + value[0] + "')";
-    }
-    findByXpathStr("//button[contains(@onclick, '" +
-                        locationSeg + "')" +
-                        valuePart + "]").click();
-  }
-
   public void clickAddEventNoErrors() {
     clickAddEvent();
 
     // Expect a messages id with "added" in text
     assertThat("Must have 'added' message",
-               findById("messages").getText(),
+               textById("messages"),
                containsString("added"));
     if (presentById("errors")) {
       fail("Errors on event add: " +
-                   findById("errors").getText());
+                   textById("errors"));
     }
   }
 }

@@ -49,37 +49,34 @@ public class SetupApproverTests extends PublicAdminTestBase {
   @Test
   public void doApproverSetup() {
     // Login as a superuser
-    adminLogin(getProperty(propAdminSuperUser),
-               getProperty(propAdminSuperUserPw),
-               "set up approver user");
+    adminLogin("adminSuperUser", "adminSuperUserPw",
+               "adminLoginSetupApproverPurpose");
 
     userRolesPage();
 
     // In general, we may have to add the user to the page by setting a role
-    getAdminPageByHrefSeg(getProperty(propApproverPrincipal));
+    getAdminPageByHrefSeg(getProperty("approverPrincipal"));
     if (setCheckboxValueIfNeeded("editAuthUserApprover", true)) {
       clickByName("modAuthUser");
     }
 
     // Now add to group
-    addUserToGroup(getProperty(propApproverUser),
-                   getProperty(propApproverUserGroupName));
+    addUserToGroup("approverUser", "approverUserGroupName");
 
     logout();
 
     // Log in to admin client and check visibility of elements
-    adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw),
-               "check approver tabs");
+    adminLogin("approverUser", "approverUserPw",
+               "adminLoginApproverCheckTabsPurpose");
 
-    assertThat("Should not see user and system tabs",
-               presentByXpathStr(getProperty(propAdminTabHomePath)) &&
-                       presentByXpathStr(getProperty(propAdminTabApprovalqPath)) &&
-                       presentByXpathStr(getProperty(propAdminTabSuggestionqPath)) &&
-                       presentByXpathStr(getProperty(propAdminTabPendingqPath)) &&
-                       presentByXpathStr(getProperty(propAdminTabCalendarSuitePath)) &&
-                       !presentByXpathStr(getProperty(propAdminTabUsersPath)) &&
-                       !presentByXpathStr(getProperty(propAdminTabSystemPath)));
+    assertThat(getProperty("assertionAdminApproverVisibleTabs"),
+               presentByXpath("adminTabHomePath") &&
+                   presentByXpath("adminTabApprovalqPath") &&
+                   presentByXpath("adminTabSuggestionqPath") &&
+                   presentByXpath("adminTabPendingqPath") &&
+                   presentByXpath("adminTabCalendarSuitePath") &&
+                   !presentByXpath("adminTabUsersPath") &&
+                   !presentByXpath("adminTabSystemPath"));
     logout();
   }
 
@@ -88,39 +85,37 @@ public class SetupApproverTests extends PublicAdminTestBase {
   @Test
   public void doApprover2GroupsSetup() {
     // Login as a superuser
-    adminLogin(getProperty(propAdminSuperUser),
-               getProperty(propAdminSuperUserPw),
-               "set up approver user in 2 groups");
+    adminLogin("adminSuperUser", "adminSuperUserPw",
+               "adminLoginSetupApproverGroupsPurpose");
 
     userRolesPage();
 
     // In general, we may have to add the user to the page by setting a role
-    getAdminPageByHrefSeg(getProperty(propApproverPrincipal2Groups));
+    getAdminPageByHrefSeg(getProperty("approverPrincipal2Groups"));
     if (setCheckboxValueIfNeeded("editAuthUserApprover", true)) {
       clickByName("modAuthUser");
     }
 
     // Now add to groups
-    addUserToGroup(getProperty(propApproverUser2Groups),
-                   getProperty(propApproverUserGroupName));
-    addUserToGroup(getProperty(propApproverUser2Groups),
-                   getProperty(propNonApproverUserGroupName));
+    addUserToGroup("approverUser2Groups",
+                   "approverUserGroupName");
+    addUserToGroup("approverUser2Groups",
+                   "nonApproverUserGroupName");
 
     logout();
 
     // Log in to admin client and check visibility of elements
-    adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw),
-               "as approver to check tabs");
+    adminLogin("approverUser", "approverUserPw",
+               "adminLoginApproverCheckTabsPurpose");
 
-    assertThat("Should not see user and system tabs",
-               presentByXpathStr(getProperty(propAdminTabHomePath)) &&
-                       presentByXpathStr(getProperty(propAdminTabApprovalqPath)) &&
-                       presentByXpathStr(getProperty(propAdminTabSuggestionqPath)) &&
-                       presentByXpathStr(getProperty(propAdminTabPendingqPath)) &&
-                       presentByXpathStr(getProperty(propAdminTabCalendarSuitePath)) &&
-                       !presentByXpathStr(getProperty(propAdminTabUsersPath)) &&
-                       !presentByXpathStr(getProperty(propAdminTabSystemPath)));
+    assertThat(getProperty("assertionAdminApproverVisibleTabs"),
+               presentByXpath("adminTabHomePath") &&
+                   presentByXpath("adminTabApprovalqPath") &&
+                   presentByXpath("adminTabSuggestionqPath") &&
+                   presentByXpath("adminTabPendingqPath") &&
+                   presentByXpath("adminTabCalendarSuitePath") &&
+                   !presentByXpath("adminTabUsersPath") &&
+                   !presentByXpath("adminTabSystemPath"));
 
     logout();
   }

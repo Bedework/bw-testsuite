@@ -24,10 +24,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 
-import java.util.UUID;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Order(110)
@@ -51,28 +49,25 @@ public class BasicEventregTests extends EventregBase {
   @Test
   @DisplayName("Public event registration: Add an event and register a user")
   public void testEventreg() {
-    final String uuid = UUID.randomUUID().toString();
-    final String eventTitle =
-            getProperty(propEventregTitlePrefix) +
-                    " EventregTest - " + uuid;
+    setUUID();
 
-    adminLogin(getProperty(propApproverUser),
-               getProperty(propApproverUserPw),
-               "add an event and register a user");
+    adminLogin("approverUser", "approverUserPw",
+               "eventregLoginAddEventPurpose");
 
-    startAddEvent(eventTitle,
-                  "bedework eventreg test description", "FREE",
-                  getProperty(propAdminEventLink),
+    startAddEvent("eventregEventTitle",
+                  "eventregEventDescription",
+                  "FREE",
+                  "adminEventLink",
                   null,
                   null);
     setCheckboxValueIfNeeded("bwIsRegisterableEvent", true);
 
     // An alert should show up
-    // getWebDriver().switchTo().alert().accept();
+    // driver().switchTo().alert().accept();
 
     // Click on add/manage and authenticate
 
-    setTextByName("xBwMaxTicketsHolder", "20");
+    setTextByNameStr("xBwMaxTicketsHolder", "20");
     // set tickets allowed - xBwMaxTicketsPerUserHolder
     // optionally set max wait list - xBwMaxWaitListHolder
     // leave opens
@@ -90,22 +85,20 @@ public class BasicEventregTests extends EventregBase {
     // Look for the registration fields
 
     assertTrue(presentById("bwRegistrationBox"),
-               "Event registration fields missing for event " + uuid);
+               getProperty("assertionEventregFieldsMissing"));
 
     //switch To IFrame using Web Element
     toIframe("evregIframe");
 
-    msgStr("Log in to register for event as " +
-                getProperty(propEventregUser));
-    sendLogin(getProperty(propEventregUser),
-              getProperty(propEventregPw));
+    msg("msgEventregLogin");
+    sendLogin("eventregUser", "eventregPw");
 
     clickById("register");
     assertThat("Should have registered message",
-               findByTag("p").getText(),
+               textByTag("p"),
                containsString("Thank you! Your request for"));
 
-    msgStr("Successsfully registered for event " + uuid);
+    msg("msgEventregSuccess");
     findByAttribute("href='logout.do'").click();
     toDefault();
   }
@@ -119,10 +112,9 @@ public class BasicEventregTests extends EventregBase {
         logout();
       } catch (final Throwable ignored) {}
       // Login as a superuser
-      adminLogin(getProperty(propAdminSuperUser),
-                 getProperty(propAdminSuperUserPw),
-                 "Clean up for admin");
-      eventsListPage();
+      adminLogin("adminSuperUser", "adminSuperUserPw",
+                 "adminLoginCleanupPurpose");
+      manageEventsPage();
       var found = false;
       do {
         found = false;
@@ -132,11 +124,11 @@ public class BasicEventregTests extends EventregBase {
           if (link.getText().contains(
                   getProperty(propEventregTitlePrefix))) {
             link.click();
-            findByName("delete").click();
+            clickByName("delete");
             // Confirm
-            findByName("delete").click();
+            clickByName("delete");
             assertThat("Must have 'deleted' message",
-                       findById("messages").getText(),
+                       textById("messages"),
                        containsString("deleted"));
 
             found = true;
