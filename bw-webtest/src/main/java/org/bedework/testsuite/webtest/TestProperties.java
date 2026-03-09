@@ -1,11 +1,6 @@
 package org.bedework.testsuite.webtest;
 
-import org.bedework.base.exc.BedeworkException;
 import org.bedework.util.properties.PlaceHolderProperties;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class TestProperties {
   public static final String overridePropfileSysProperty =
@@ -14,30 +9,18 @@ public class TestProperties {
   final PlaceHolderProperties props;
 
   TestProperties() {
-    final var newProps = new PlaceHolderProperties();
-    try (final InputStream stream =
-             getClass().getResourceAsStream("/webtest.properties")) {
-      newProps.load(stream);
-    } catch (final IOException e) {
-      throw new BedeworkException(e);
-    }
+    props = PlaceHolderProperties
+        .loadPropertyFile("/webtest.properties");
 
-    final var overrides =
+    final var overridesPath =
         System.getProperty(overridePropfileSysProperty);
 
-    if (overrides == null) {
-      props = newProps;
-    } else {
-      final var overrideProps = new PlaceHolderProperties(newProps);
-
-      try (final InputStream stream =
-               new FileInputStream(overrides)) {
-        overrideProps.load(stream);
-      } catch (final IOException e) {
-        throw new BedeworkException(e);
-      }
-
-      props = overrideProps;
+    if ((overridesPath != null) &&
+        !overridesPath.isEmpty()) {
+      final var overrrides =
+          PlaceHolderProperties.
+              loadWithSuperProperties(overridesPath);
+      props.putAll(overrrides);
     }
   }
 

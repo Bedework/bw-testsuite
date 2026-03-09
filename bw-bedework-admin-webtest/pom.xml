@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.bedework</groupId>
+    <artifactId>bw-testsuite</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>bw-bedework-admin-webtest</artifactId>
+  <name>Bedework: test admin client via web interface.</name>
+  <url>https://github.com/Bedework/bw-testsuite-bw-bedework-admin-webtest</url>
+
+  <properties>
+    <configDir>${project.build.directory}/generated/config</configDir>
+
+    <common.resources.directory>${project.basedir}/../bw-bedework-webtest/src/main/resources</common.resources.directory>
+
+    <this.resources.directory>${project.basedir}/src/main/resources</this.resources.directory>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.bedework</groupId>
+      <artifactId>bw-bedework-webtest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-common-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${configDir}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${common.resources.directory}</directory>
+                </resource>
+                <resource>
+                  <directory>${this.resources.directory}</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+
+        <configuration>
+          <assembleDirectory>${project.build.directory}/client</assembleDirectory>
+          <programs>
+            <program>
+              <mainClass>org.junit.platform.console.ConsoleLauncher</mainClass>
+              <id>client</id>
+            </program>
+          </programs>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -88,27 +88,4 @@
       <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>appassembler-maven-plugin</artifactId>
-
-        <configuration>
-          <assembleDirectory>${project.build.directory}/client</assembleDirectory>
-          <programs>
-            <program>
-              <mainClass>org.junit.platform.console.ConsoleLauncher</mainClass>
-              <id>client</id>
-            </program>
-          </programs>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <groupId>org.apache.maven.plugins</groupId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

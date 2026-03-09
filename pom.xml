@@ -21,5 +21,11 @@
 
   <modules>
     <module>bw-webtest</module>
+    <module>bw-bedework-webtest</module>
+    <module>bw-bedework-admin-webtest</module>
+    <module>bw-bedework-personal-webtest</module>
+    <module>bw-bedework-selfreg-webtest</module>
+    <module>bw-bedework-eventreg-webtest</module>
+    <module>bw-bedework-submissions-webtest</module>
   </modules>
 </project>

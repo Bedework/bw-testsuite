@@ -20,9 +20,8 @@ package org.bedework.testsuite.webtest;
 
 import org.bedework.testsuite.webtest.Driver.DriverType;
 
-import net.fortuna.ical4j.model.Dur;
-import net.fortuna.ical4j.model.property.DtStart;
 import org.apache.commons.lang3.SystemUtils;
+import org.hamcrest.Matcher;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -30,21 +29,16 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
-import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * @author johnsa
  *
  */
-public class TestBase {
+public abstract class TestBase {
   private Driver driver;
 
   private static final ThreadLocal<TestProperties> props =
@@ -53,68 +47,22 @@ public class TestBase {
 
   protected static boolean isMac = SystemUtils.IS_OS_MAC;
 
-  /** Logout string - found in the URL */
-  public static final String propLogoutText = "logoutText";
-
-  public String getDateAfter(final String duration) {
-    final var dur = new Dur(duration);
-    final var tm = dur.getTime(new Date());
-    final var dt = new DtStart(new net.fortuna.ical4j.model.Date(tm));
-
-    return dt.toString();
-  }
-
-  public void setDateAfterByName(final String fieldName,
-                                 final String duration) {
-    /*
-    /html/body/div[2]/div/a[2]
-     */
-    clickByName(fieldName);
-
-    // Date picker should be up
-
-    final var datePickDiv = findById("ui-datepicker-div");
-    // Move on one month
-    datePickDiv.findElement(
-            By.cssSelector("[data-handler='next']")).click();
-    // Go for the 27th
-    final List<WebElement> links = datePickDiv.findElements(
-            By.tagName("a"));
-
-    for (final var el: links) {
-      if ("27".equals(el.getText())) {
-        el.click();
-      }
-    }
-  }
-
-  public TestProperties getProperties() {
-    if (props.get() == null) {
-      synchronized (lock) {
-        props.set(new TestProperties());
-      }
-    }
-
-    return props.get();
-  }
-
-  public String getProperty(final String name) {
-    return getProperties().getProperty(name);
-  }
-
-  public void setUUID() {
-    setProperty("uuid", UUID.randomUUID().toString());
-  }
-
-  public void setProperty(final String name,
-                          final String value) {
-    props.get().setProperty(name, value);
-  }
-
-  public void setPropertyFrom(final String name,
-                              final String valueProp) {
-    props.get().setProperty(name, getProperty(valueProp));
-  }
+  /** Returned values for bedework should be something like
+   * (English form)
+   *
+   * "public" for the public web client
+   * "personal" for the personal web client
+   * "admin" for the public event admin web client
+   * "submissions" for the public event submissions web client
+   * "event registration" for the public event registration
+   * web client
+   * <p>
+   * These values are NOT used in tests - just for messages
+   * so should come from the properties file so they may be
+   * localized. The bedework test classes do so.
+   * @return a string identifying the client we are testing.
+   */
+  public abstract String getClientName();
 
   public Driver driver() {
     if (driver == null) {
@@ -134,6 +82,30 @@ public class TestBase {
     }
   }
 
+  public TestProperties getProperties() {
+    if (props.get() == null) {
+      synchronized (lock) {
+        props.set(new TestProperties());
+      }
+    }
+
+    return props.get();
+  }
+
+  public String getProperty(final String name) {
+    return getProperties().getProperty(name);
+  }
+
+  public void setProperty(final String name,
+                          final String value) {
+    props.get().setProperty(name, value);
+  }
+
+  public void setPropertyFrom(final String name,
+                              final String valueProp) {
+    props.get().setProperty(name, getProperty(valueProp));
+  }
+
   protected void toIframe(final String id) {
     driver().toIframeById(id);
   }
@@ -142,59 +114,8 @@ public class TestBase {
     driver().toDefault();
   }
 
-  protected void sendLogin(
-          final String userProp,
-          final String passwordProp) {
-    // Log in to the client
-    findByName("j_username").sendKeys(getProperty(userProp));
-    findByName("j_password").sendKeys(getProperty(passwordProp));
-    clickByName("j_security_check");
-  }
-
-  protected WebElement sendLoginGetFooter(
-          final String userProp,
-          final String passwordProp) {
-    sendLogin(userProp, passwordProp);
-
-    // Verify that we are logged in
-    return findById("footer");
-  }
-
-  public void logout() {
-    // Scroll to the top
-    driver().scrollToTop();
-    clickByXpath("commonLogoutButton");
-    findById("loginBox");
-  }
-
   public boolean checkboxValue(final String id) {
     return findById(id).isSelected();
-  }
-
-  public void checkPublicPageForEvent(final String time) {
-    // ****************************************
-    // Now test the event in the public client.
-    msg("msgEventPublishedCheckingPublic");
-
-    getPublicPage("publicHome");
-
-    // The event should exist today.  It should be on the current page.
-    // The following will fail if not found:
-    getPublicPageByXpath("publicEventByUUID");
-
-    msg("msgEventFound");
-
-    final var actual = textByXpath("publicEventTime")
-        .replaceAll("\\u202F", " ");
-    // May need to replace other localization characters.
-
-    msgStr(format("Actual time is \"%s\" required \"%s\"", actual, time));
-
-    assertThat("Time should be at \"" +
-                       time +
-                       "\": ",
-               actual,
-               containsString(time));
   }
 
   /**
@@ -221,7 +142,7 @@ public class TestBase {
    * @return true if changed (submit needed)
    */
   public boolean setRadioByIdIfNeeded(final String id,
-                                          final boolean value) {
+                                      final boolean value) {
     final var radio = findById(id);
     if (radio.isSelected() == value) {
       return false;
@@ -239,33 +160,8 @@ public class TestBase {
     findByName(name).click();
   }
 
-  public void clickByNameNoErrors(final String name,
-                                    final String message) {
-    clickByName(name);
-
-    if (presentById("errors")) {
-      fail(message + ": " +
-               textById("errors"));
-    }
-  }
-
   public void clickByXpath(final String pathProp) {
     findByXpath(pathProp).click();
-  }
-
-  public void errorMustContain(final String reason,
-                               final String matchValue) {
-    assertThat(reason,
-               textById("errors"),
-               containsString(matchValue));
-  }
-
-  public void errorMustNotContain(
-          final String reason,
-          final String matchValue) {
-    assertThat(reason,
-               textById("errors"),
-               not(containsString(matchValue)));
   }
 
   public WebElement parentOf(final WebElement val) {
@@ -364,22 +260,6 @@ public class TestBase {
     driver().toHref(getProperty(hrefProp));
   }
 
-  public void getPublicPage(final String hrefProp) {
-    goToHref(hrefProp);
-    checkPublicPage();
-  }
-
-  public void getPublicPageByXpath(final String xpathProp) {
-    clickByXpath(xpathProp);
-    checkPublicPage();
-  }
-
-  public void checkPublicPage() {
-    assertThat("Footer must contain correct text: ",
-               textById("footer"),
-               containsString(getProperty("publicFooter")));
-  }
-
   public ExpectedCondition<WebElement> visibilityOfElementLocated(final By locator) {
     return driver -> {
       final WebElement toReturn = driver.findElement(locator);
@@ -389,6 +269,71 @@ public class TestBase {
       return null;
     };
   }
+
+  /* ---------------------- Assertions using properties */
+
+  public void mustBeTrue(final String reasonProp,
+                         final boolean expectedValue) {
+    assertThat(getProperty(reasonProp), expectedValue);
+  }
+
+  public void mustContain(
+      final String reasonProp,
+      final String actual,
+      final String valProp) {
+    assertThat(getProperty(reasonProp), actual,
+               containsString(getProperty(valProp)));
+  }
+
+  public <T> void assertionThat(
+      final String reasonProp,
+      final T actual,
+      final Matcher<? super T> matcher) {
+    assertThat(getProperty(reasonProp), actual, matcher);
+  }
+
+  public Matcher<String> hasString(final String valProp) {
+    return containsString(getProperty(valProp));
+  }
+
+  @FunctionalInterface
+  public interface CheckLoggedIn {
+    void check(String checkProp);
+  }
+
+  /** Standard java login form
+   *
+   * @param userProp account
+   * @param passwordProp password text
+   */
+  protected void sendLogin(
+      final String userProp,
+      final String passwordProp) {
+    // Log in to the client
+    findByName("j_username").sendKeys(getProperty(userProp));
+    findByName("j_password").sendKeys(getProperty(passwordProp));
+    clickByName("j_security_check");
+  }
+
+  /* Login and check */
+  protected void sendLoginCheck(
+      final String userProp,
+      final String passwordProp,
+      final String msgPurposeProp,
+      final CheckLoggedIn checkLoggedIn,
+      final String checkProp) {
+    setPropertyFrom("user", userProp);
+    setPropertyFrom("loginPurpose", msgPurposeProp);
+    msg("msgCommonAboutToLogin");
+
+    sendLogin(userProp, passwordProp);
+
+    checkLoggedIn.check(checkProp);
+
+    msg("msgCommonLoggedIn");
+  }
+
+  /* ---------------------- Output and formatting */
 
   final static DateTimeFormatter fmt =
           DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
@@ -402,7 +347,7 @@ public class TestBase {
     System.out.println(LocalDateTime.now().format(fmt) + ": " + msg);
   }
 
-  protected void msg(final String msg, final String... msgPars) {
+  protected void msgStr(final String msg, final String... msgPars) {
     System.out.printf(LocalDateTime.now().format(fmt) + ": " + msg, msgPars);
   }
 }
