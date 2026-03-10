@@ -60,6 +60,7 @@
         <artifactId>appassembler-maven-plugin</artifactId>
 
         <configuration>
+          <configurationSourceDirectory>${configDir}</configurationSourceDirectory>
           <assembleDirectory>${project.build.directory}/client</assembleDirectory>
           <programs>
             <program>
