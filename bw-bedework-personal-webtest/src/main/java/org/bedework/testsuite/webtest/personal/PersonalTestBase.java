@@ -11,7 +11,7 @@ import org.bedework.testsuite.webtest.bedework.BedeworkTestBase;
 public class PersonalTestBase extends BedeworkTestBase {
   @Override
   public String getClientName() {
-    return getProperty("submissionsClientName");
+    return getProperty("personalClientName");
   }
 
   /**

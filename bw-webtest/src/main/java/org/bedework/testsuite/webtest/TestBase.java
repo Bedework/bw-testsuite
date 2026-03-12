@@ -33,6 +33,8 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author johnsa
@@ -93,7 +95,9 @@ public abstract class TestBase {
   }
 
   public String getProperty(final String name) {
-    return getProperties().getProperty(name);
+    final var val = getProperties().getProperty(name);
+    assertNotNull(val, "Missing property: " + name);
+    return val;
   }
 
   public void setProperty(final String name,
@@ -275,6 +279,11 @@ public abstract class TestBase {
   public void mustBeTrue(final String reasonProp,
                          final boolean expectedValue) {
     assertThat(getProperty(reasonProp), expectedValue);
+  }
+
+  public void mustBeEqual(final String expectedValue,
+                          final String actualValue) {
+    assertEquals(getProperty(expectedValue), actualValue);
   }
 
   public void mustContain(

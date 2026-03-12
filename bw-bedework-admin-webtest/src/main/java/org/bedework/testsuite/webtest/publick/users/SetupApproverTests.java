@@ -53,7 +53,7 @@ public class SetupApproverTests extends PublicAdminTestBase {
     userRolesPage();
 
     // In general, we may have to add the user to the page by setting a role
-    getAdminPageByHrefSeg(getProperty("approverPrincipal"));
+    getAdminPageByHrefSeg("approverPrincipal");
     if (setCheckboxValueIfNeeded("editAuthUserApprover", true)) {
       clickByName("modAuthUser");
     }
@@ -89,7 +89,7 @@ public class SetupApproverTests extends PublicAdminTestBase {
     userRolesPage();
 
     // In general, we may have to add the user to the page by setting a role
-    getAdminPageByHrefSeg(getProperty("approverPrincipal2Groups"));
+    getAdminPageByHrefSeg("approverPrincipal2Groups");
     if (setCheckboxValueIfNeeded("editAuthUserApprover", true)) {
       clickByName("modAuthUser");
     }

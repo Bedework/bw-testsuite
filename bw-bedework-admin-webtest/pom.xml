@@ -13,14 +13,6 @@
   <name>Bedework: test admin client via web interface.</name>
   <url>https://github.com/Bedework/bw-testsuite-bw-bedework-admin-webtest</url>
 
-  <properties>
-    <configDir>${project.build.directory}/generated/config</configDir>
-
-    <common.resources.directory>${project.basedir}/../bw-bedework-webtest/src/main/resources</common.resources.directory>
-
-    <this.resources.directory>${project.basedir}/src/main/resources</this.resources.directory>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.bedework</groupId>
@@ -32,35 +24,10 @@
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-common-resources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${configDir}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${common.resources.directory}</directory>
-                </resource>
-                <resource>
-                  <directory>${this.resources.directory}</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
 
         <configuration>
-          <configurationSourceDirectory>${configDir}</configurationSourceDirectory>
           <assembleDirectory>${project.build.directory}/client</assembleDirectory>
           <programs>
             <program>

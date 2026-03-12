@@ -139,17 +139,16 @@ public abstract class BedeworkTestBase extends TestBase {
     mustContain("commonExpectedTime", actual, "time");
   }
 
-  public void errorMustContain(final String reason,
-                               final String matchValue) {
-    assertThat(reason,
+  public void errorMustContain(final String reasonProp,
+                               final String matchValueProp) {
+    assertThat(getProperty(reasonProp),
                textById("errors"),
-               containsString(matchValue));
+               containsString(getProperty(matchValueProp)));
   }
 
-  public void errorMustNotContain(
-          final String reason,
-          final String matchValue) {
-    assertThat(reason,
+  public void errorMustNotContain(final String reasonProp,
+                                  final String matchValue) {
+    assertThat(getProperty(reasonProp),
                textById("errors"),
                not(containsString(matchValue)));
   }
@@ -165,8 +164,6 @@ public abstract class BedeworkTestBase extends TestBase {
   }
 
   public void checkPublicPage() {
-    assertThat("Footer must contain correct text: ",
-               textById("footer"),
-               containsString(getProperty("publicFooter")));
+    checkLoggedIn(null);
   }
 }

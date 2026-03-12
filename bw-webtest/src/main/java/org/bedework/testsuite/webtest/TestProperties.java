@@ -10,7 +10,7 @@ public class TestProperties {
 
   TestProperties() {
     props = PlaceHolderProperties
-        .loadPropertyFile("/webtest.properties");
+        .loadWithSuperProperties("webtest.properties");
 
     final var overridesPath =
         System.getProperty(overridePropfileSysProperty);

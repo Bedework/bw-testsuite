@@ -1,7 +1,6 @@
 package org.bedework.testsuite.webtest.personal;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -35,10 +34,9 @@ public class AddPublicSubTests extends PersonalTestBase {
     // get to the manage calendars page
     clickByXpath("personalManageCalendarsLink");
 
-    Assertions.assertEquals(
-        textByXpath(
-                    "personalManageCalendarsValidationPath"),
-        getProperty("personalManageCalendarsValidationValue"));
+    mustBeEqual("personalManageCalendarsValidationValue",
+                textByXpath(
+                    "personalManageCalendarsValidationPath"));
     msg("msgPersonalOnManageCalPage");
 
     // Ensure no previous subscription
@@ -59,8 +57,8 @@ public class AddPublicSubTests extends PersonalTestBase {
     clickByXpath("personalManageCalendarsSelectSubscriptionConcerts");
 
     // determine if the display name updated
-    Assertions.assertEquals(getProperty("personalSubmissionConcertsName"),
-                            findById("intSubDisplayName").getDomAttribute("value"));
+    mustBeEqual("personalSubmissionConcertsName",
+                findById("intSubDisplayName").getDomAttribute("value"));
     // change to a new display name
     setTextByIdStr("intSubDisplayName", subFinder);
 

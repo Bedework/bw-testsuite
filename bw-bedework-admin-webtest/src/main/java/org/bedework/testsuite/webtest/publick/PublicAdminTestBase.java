@@ -70,52 +70,44 @@ public class PublicAdminTestBase extends BedeworkTestBase {
     }
   }
 
-  public void checkPage() {
-    MatcherAssert.assertThat("Footer must contain correct text: ",
-                             textById("footer"),
-                             CoreMatchers.containsString(getProperty("adminFooter")));
-  }
-
   public void getAdminPageByHref(final String hrefProp) {
     goToHref(hrefProp);
-    checkPage();
+    checkLoggedIn(null);
   }
 
   public void getAdminPageByXpath(final String xpathProp) {
     clickByXpath(xpathProp);
-    checkPage();
+    checkLoggedIn(null);
   }
 
   public void getAdminPageByHrefSeg(final String hrefsegProp) {
     findByXpathStr("//a[contains(@href,'" +
                         getProperty(hrefsegProp) +
                         "')]").click();
-    checkPage();
+    checkLoggedIn(null);
   }
 
   public void getAdminPageById(final String id) {
     clickById(id);
-    checkPage();
+    checkLoggedIn(null);
   }
 
   public void addEventPage() {
     getAdminPageById("addEventLink");
-    Assertions.assertEquals(textByTag("h2"),
-                            getProperty("adminEventInfoTitle"));
+    mustBeEqual("adminEventInfoTitle", textByTag("h2"));
     msg("msgAdminOnEventInfoPage");
   }
 
   public void eventsListPage() {
     getAdminPageById("manageEventsLink");
 
-    Assertions.assertEquals(textByTag("h2"),
-                            getProperty("adminManageEventsTitle"));
+    mustBeEqual("adminManageEventsTitle", textByTag("h2"));
     msg("msgAdminOnManageEventsPage");
   }
 
   public void adminGroupListPage() {
     getAdminPageByXpath("adminTabUsersPath");
-    getAdminPageByXpath("adminGroupManagePath");
+    getAdminPageByHrefSeg("adminGroupManageLink");
   }
 
   public void homePage() {
@@ -125,8 +117,7 @@ public class PublicAdminTestBase extends BedeworkTestBase {
   public void manageEventsPage() {
     getAdminPageByXpath("adminTabManageEventsPath");
 
-    Assertions.assertEquals(textByTag("h2"),
-                            getProperty("adminManageEventsTitle"));
+    mustBeEqual("adminManageEventsTitle", textByTag("h2"));
     msg("msgAdminOnManageEventsPage");
   }
 
@@ -148,7 +139,7 @@ public class PublicAdminTestBase extends BedeworkTestBase {
       final String nameProp) {
     try {
       setPropertyFrom("groupName", nameProp);
-      getAdminPageByXpath("adminGroupManageMembersPagePath");
+      getAdminPageByHref("adminGroupManageMembersPagePath");
       return true;
     } catch (final NoSuchElementException ignored) {
       return false;
@@ -201,7 +192,7 @@ public class PublicAdminTestBase extends BedeworkTestBase {
   public void userRolesPage() {
     // get to the user roles page
     getAdminPageByXpath("adminTabUsersPath");
-    getAdminPageByHrefSeg("authuser/initUpdate.do");
+    getAdminPageByHrefSeg("adminAuthUserUpdateLink");
   }
 
   public void addSummary(final String valProp) {

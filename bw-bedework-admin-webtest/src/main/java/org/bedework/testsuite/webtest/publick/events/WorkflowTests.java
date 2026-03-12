@@ -50,7 +50,7 @@ public class WorkflowTests extends PublicAdminTestBase {
 
     // Select group
 
-    getAdminPageByHrefSeg(getProperty("nonApproverUserGroupName"));
+    getAdminPageByHrefSeg("nonApproverUserGroupName");
 
     approvalQueuePage();
 

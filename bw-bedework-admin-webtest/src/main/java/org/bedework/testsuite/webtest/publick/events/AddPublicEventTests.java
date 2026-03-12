@@ -56,31 +56,27 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     // test basic validation without filling in the form
     clickAddEvent();
 
-    errorMustContain(
-            "Error should be thrown for no topical area: ",
-            getProperty("adminErrorNoTopicalArea"));
+    errorMustContain("assertionAdminErrorNoTopicalArea",
+                     "adminErrorNoTopicalArea");
 
     // we must select a topical area to get to the next errors
     setDefaultTopicalArea();
 
     // test next validation error (no location)
     clickAddEvent();
-    errorMustContain(
-            "Error should be shown for 'no location': ",
-            getProperty("adminErrorNoLocation"));
+    errorMustContain("assertionAdminErrorNoLocation",
+                     "adminErrorNoLocation");
 
     setALocation();
 
     // test next validation error (no contact)
     clickAddEvent();
 
-    errorMustNotContain(
-            "Should not have 'no contact' error: ",
-            getProperty("adminErrorNoContact"));
+    errorMustNotContain("assertionAdminErrorNotNoContact",
+                        "adminErrorNoContact");
 
-    errorMustContain(
-            "Error should be shown for 'no contact': ",
-            getProperty("adminErrorNoContact"));
+    errorMustContain("assertionAdminErrorNoContact",
+                     "adminErrorNoContact");
 
     setAContact();
 
