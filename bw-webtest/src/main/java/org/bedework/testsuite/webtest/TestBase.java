@@ -168,6 +168,15 @@ public abstract class TestBase {
     findByXpath(pathProp).click();
   }
 
+  public void scrollWaitClick(final String pathProp) {
+    final var el = findByXpath(pathProp);
+    driver().scrollToCenter(el).waitFor(el).click();
+  }
+
+  public void waitAndClickByXpath(final String pathProp) {
+    driver().waitByXpath(pathProp).click();
+  }
+
   public WebElement parentOf(final WebElement val) {
     return val.findElement(By.xpath("./.."));
   }

@@ -35,7 +35,7 @@ public class SimpleSubmitEventTests extends SubmissionTestBase {
 
     addSummary("submissionsEventTitle");
     addDescription("submissionsEventDescription");
-    clickByXpath("submitEventTopicalArea1Xpath");
+    clickByXpath("commonTopicalArea1Xpath");
     setALocation();
     setAContact();
     setTime();

@@ -5,8 +5,6 @@ package org.bedework.testsuite.webtest.publick;
 
 import org.bedework.testsuite.webtest.bedework.BedeworkTestBase;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.Select;
@@ -208,7 +206,7 @@ public class PublicAdminTestBase extends BedeworkTestBase {
   }
 
   public void setDefaultTopicalArea() {
-    clickByXpath("adminEventTopicalArea1Xpath");
+    clickByXpath("commonTopicalArea1Xpath");
   }
 
   public void setALocation() {
@@ -221,7 +219,7 @@ public class PublicAdminTestBase extends BedeworkTestBase {
 
     // Set text in search box
     setTextByIdStr("bwLocationSearch", "loc");
-    clickByXpath("adminSelectInLocSearch");
+    scrollWaitClick("adminSelectInLocSearch");
   }
 
   public void setAContact() {
@@ -234,7 +232,7 @@ public class PublicAdminTestBase extends BedeworkTestBase {
 
     // Set text in search box
     setTextByIdStr("bwContactSearch", "co");
-    clickByXpath("adminSelectInContactSearch");
+    scrollWaitClick("adminSelectInContactSearch");
   }
 
   /**

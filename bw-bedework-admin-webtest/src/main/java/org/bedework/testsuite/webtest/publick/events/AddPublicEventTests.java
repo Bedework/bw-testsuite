@@ -57,7 +57,7 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     clickAddEvent();
 
     errorMustContain("assertionAdminErrorNoTopicalArea",
-                     "adminErrorNoTopicalArea");
+                     "adminErrorUpdateEventTopicalArea");
 
     // we must select a topical area to get to the next errors
     setDefaultTopicalArea();
@@ -65,18 +65,15 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     // test next validation error (no location)
     clickAddEvent();
     errorMustContain("assertionAdminErrorNoLocation",
-                     "adminErrorNoLocation");
+                     "adminErrorUpdateEventNoLocation");
 
     setALocation();
 
     // test next validation error (no contact)
     clickAddEvent();
 
-    errorMustNotContain("assertionAdminErrorNotNoContact",
-                        "adminErrorNoContact");
-
     errorMustContain("assertionAdminErrorNoContact",
-                     "adminErrorNoContact");
+                     "adminErrorUpdateEventNoContact");
 
     setAContact();
 
