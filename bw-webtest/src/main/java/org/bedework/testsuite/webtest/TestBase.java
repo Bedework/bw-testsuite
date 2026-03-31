@@ -177,6 +177,10 @@ public abstract class TestBase {
     driver().waitByXpath(pathProp).click();
   }
 
+  public void waitByXpath(final String pathProp) {
+    driver().waitByXpath(pathProp);
+  }
+
   public WebElement parentOf(final WebElement val) {
     return val.findElement(By.xpath("./.."));
   }
