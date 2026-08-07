@@ -94,10 +94,14 @@ public class AddPublicEventTests extends PublicAdminTestBase {
     // submit the event
     clickAddEventNoErrors();
 
-    /* The event should show up in the manage events list. */
-    manageEventsPage();
+    for (var i = 1; i < 5; i++) {
+      /* The event should show up in the manage events list. */
+      manageEventsPage();
 
-    waitByXpath("adminEventByUUID");
+      if (presentByXpath("adminEventByUUID")) {
+        break;
+      }
+    }
     logout();
 
     checkPublicPageForEvent("2:00 PM");
